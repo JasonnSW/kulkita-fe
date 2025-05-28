@@ -1,0 +1,123 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { useToast } from "@/hooks/use-toast"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+const codeFormSchema = z.object({
+  unitCode: z.string().min(5, {
+    message: "Kode unit minimal 5 karakter.",
+  }),
+})
+
+const inviteFormSchema = z.object({
+  inviteCode: z.string().min(5, {
+    message: "Kode undangan minimal 5 karakter.",
+  }),
+})
+
+export function JoinUnitForm() {
+  const router = useRouter()
+  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const codeForm = useForm<z.infer<typeof codeFormSchema>>({
+    resolver: zodResolver(codeFormSchema),
+    defaultValues: {
+      unitCode: "",
+    },
+  })
+
+  const inviteForm = useForm<z.infer<typeof inviteFormSchema>>({
+    resolver: zodResolver(inviteFormSchema),
+    defaultValues: {
+      inviteCode: "",
+    },
+  })
+
+  function onCodeSubmit(values: z.infer<typeof codeFormSchema>) {
+    setIsLoading(true)
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false)
+      toast({
+        title: "Berhasil bergabung",
+        description: "Anda telah berhasil bergabung dengan unit SPPG",
+      })
+      router.push("/dashboard")
+    }, 1000)
+  }
+
+  function onInviteSubmit(values: z.infer<typeof inviteFormSchema>) {
+    setIsLoading(true)
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false)
+      toast({
+        title: "Berhasil bergabung",
+        description: "Anda telah berhasil bergabung dengan unit SPPG",
+      })
+      router.push("/dashboard")
+    }, 1000)
+  }
+
+  return (
+    <Tabs defaultValue="code" className="w-full mt-4">
+      <TabsList className="grid w-full grid-cols-2 mb-4">
+        <TabsTrigger value="code">Kode Unit</TabsTrigger>
+        <TabsTrigger value="invite">Kode Undangan</TabsTrigger>
+      </TabsList>
+      <TabsContent value="code">
+        <Form {...codeForm}>
+          <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="space-y-4">
+            <FormField
+              control={codeForm.control}
+              name="unitCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kode Unit SPPG</FormLabel>
+                  <FormControl>
+                    <Input placeholder="SPPG-JBR-001" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Memproses..." : "Gabung Unit"}
+            </Button>
+          </form>
+        </Form>
+      </TabsContent>
+      <TabsContent value="invite">
+        <Form {...inviteForm}>
+          <form onSubmit={inviteForm.handleSubmit(onInviteSubmit)} className="space-y-4">
+            <FormField
+              control={inviteForm.control}
+              name="inviteCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kode Undangan</FormLabel>
+                  <FormControl>
+                    <Input placeholder="INV-XXXXX-XXXXX" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Memproses..." : "Gunakan Undangan"}
+            </Button>
+          </form>
+        </Form>
+      </TabsContent>
+    </Tabs>
+  )
+}
