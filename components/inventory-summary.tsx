@@ -27,7 +27,7 @@ export function InventorySummary() {
           <CardTitle>Distribusi Kategori Bahan</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="max-h-dvh">
             <ChartContainer
               config={{
                 count: {
@@ -54,7 +54,7 @@ export function InventorySummary() {
           <CardTitle>Status Kesegaran Batch</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[200px]">
+          <div className="max-h-dvh">
             <ChartContainer
               config={{
                 count: {

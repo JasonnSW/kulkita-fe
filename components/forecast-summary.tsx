@@ -9,6 +9,15 @@ import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Bar, BarChart, Cart
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { ArrowUpIcon, ArrowDownIcon, TrendingUp, Calendar, BarChart3 } from "lucide-react"
 
+type ForecastEntry = {
+  day?: string
+  week?: string
+  sayuran: number
+  buah: number
+  protein: number
+  total: number
+}
+
 // Sample data for weekly forecast
 const weeklyForecastData = [
   { day: "Senin", sayuran: 45, buah: 30, protein: 25, total: 100 },
@@ -48,7 +57,7 @@ const menuForecastData = [
 
 export function ForecastSummary() {
   const [forecastPeriod, setForecastPeriod] = useState("week")
-  const [forecastData, setForecastData] = useState(weeklyForecastData)
+  const [forecastData, setForecastData] = useState<ForecastEntry[]>(weeklyForecastData)
   const [xAxisKey, setXAxisKey] = useState("day")
 
   const handlePeriodChange = (value: string) => {
@@ -139,7 +148,7 @@ export function ForecastSummary() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-[350px]">
+          <div className="max-h-dvh">
             <ChartContainer
               config={{
                 sayuran: {
@@ -197,7 +206,7 @@ export function ForecastSummary() {
             <CardDescription>Bahan dengan kebutuhan tertinggi untuk periode mendatang</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="max-h-dvh">
               <ChartContainer
                 config={{
                   forecast: {
@@ -260,7 +269,7 @@ export function ForecastSummary() {
           <CardDescription>Perubahan kebutuhan bahan dibandingkan periode sebelumnya</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[350px]">
+          <div className="max-h-dvh">
             <ChartContainer
               config={{
                 forecast: {

@@ -496,7 +496,7 @@ export function UserInvitations() {
             </div>
           </div>
         </CardContent>
-      </div>
+      </Card>
     </div>
   )
 }

@@ -41,7 +41,7 @@ export function UsageTrends() {
           </Select>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="max-h-dvh">
             <ChartContainer
               config={{
                 sayur: {
@@ -84,7 +84,7 @@ export function UsageTrends() {
           <CardTitle>Top 5 Bahan Paling Banyak Digunakan</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="max-h-dvh">
             <ChartContainer
               config={{
                 jumlah: {

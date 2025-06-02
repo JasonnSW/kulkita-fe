@@ -65,7 +65,7 @@ export function PredictionModelInsights() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="max-h-dvh">
             <ChartContainer
               config={{
                 accuracy: {
@@ -100,7 +100,7 @@ export function PredictionModelInsights() {
             <CardDescription>Tingkat pengaruh faktor terhadap prediksi pembusukan</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="max-h-dvh">
               <ChartContainer
                 config={{
                   importance: {
@@ -128,7 +128,7 @@ export function PredictionModelInsights() {
             <CardDescription>Masa simpan bahan (hari) prediksi vs aktual</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="max-h-dvh">
               <ChartContainer
                 config={{
                   actual: {
