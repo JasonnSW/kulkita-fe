@@ -34,7 +34,6 @@ export function LoginForm() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // Simulate API call
     setTimeout(() => {
       setIsLoading(false)
       toast({

@@ -16,17 +16,17 @@ export default function Home() {
             <Image
               src={logo}
               alt="Kulkita Logo"
-              width={72}
-              height={72}
+              width={68}
+              height={68}
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10"
             />
 
-            <h1 className="text-7xl font-bold tracking-tight text-gray-900 pl-16">
+            <h1 className="text-7xl font-bold tracking-tight text-gray-800 pl-16">
               ulkita
             </h1>
           </div>
 
-          <p className="text-xl text-gray-600 mb-6">
+          <p className="text-xl text-[#333] mb-6 font-sourceSansPro">
             Segar Terkelola, Gizi Tersalur
           </p>
           <p className="max-w-md text-gray-500">

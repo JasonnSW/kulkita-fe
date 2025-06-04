@@ -1,29 +1,56 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter, Lalezar } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import localFont from "next/font/local";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const lalezar = Lalezar({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-lalezar",
+});
+
+const sourceSansPro = localFont({
+  src: [
+    {
+      path: "../public/fonts/Source_Sans_3/static/SourceSans3-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-source-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Kulkita - Segar Terkelola, Gizi Tersalur",
+  title: "Kulkita",
   description: "SPPG Stock Management untuk Program Makan Bergizi Gratis",
-    generator: 'v0.dev'
-}
+  icons: {
+    icon: "/logo.svg",
+  },
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      <body
+        className={`${inter.variable} ${lalezar.variable} font-sans ${sourceSansPro.variable}`}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
           {children}
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
