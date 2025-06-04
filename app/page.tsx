@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LoginForm } from "@/components/login-form";
-import { RegisterForm } from "@/components/register-form";
-import { CreateUnitForm } from "@/components/create-unit-form";
-import { JoinUnitForm } from "@/components/join-unit-form";
+import { LoginForm } from "@/features/auth/components/login-form";
+import { RegisterForm } from "@/features/auth/components/register-form";
+import { CreateUnitForm } from "@/features/auth/components/create-unit-form";
+import { JoinUnitForm } from "@/features/auth/components/join-unit-form";
 import Image from "next/image";
 import logo from "@/public/logo.svg";
 
