@@ -4,6 +4,10 @@ import { Inter, Lalezar } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import localFont from "next/font/local";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryProvider } from "@/providers/react-query-providers";
+
+const queryClient = new QueryClient();
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const lalezar = Lalezar({
@@ -42,14 +46,16 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${lalezar.variable} font-sans ${sourceSansPro.variable}`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );
