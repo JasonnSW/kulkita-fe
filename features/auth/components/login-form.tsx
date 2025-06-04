@@ -9,30 +9,23 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { useToast } from "@/hooks/use-toast"
+import { loginSchema } from "../schemas/auth"
 
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Email tidak valid.",
-  }),
-  password: z.string().min(8, {
-    message: "Password minimal 8 karakter.",
-  }),
-})
 
 export function LoginForm() {
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof loginSchema>) {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)

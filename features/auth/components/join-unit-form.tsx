@@ -10,18 +10,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
-const codeFormSchema = z.object({
-  unitCode: z.string().min(5, {
-    message: "Kode unit minimal 5 karakter.",
-  }),
-})
-
-const inviteFormSchema = z.object({
-  inviteCode: z.string().min(5, {
-    message: "Kode undangan minimal 5 karakter.",
-  }),
-})
+import { codeFormSchema, inviteFormSchema } from "../schemas/auth"
 
 export function JoinUnitForm() {
   const router = useRouter()

@@ -1,12 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { InventorySummary } from "@/components/inventory-summary"
-import { ExpiryAlertTable } from "@/components/expiry-alert-table"
-import { UsageTrends } from "@/components/usage-trends"
-import { WasteLossChart } from "@/components/waste-loss-chart"
-import { EconomicLossReport } from "@/components/economic-loss-report"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { InventorySummary } from "@/components/inventory-summary";
+import { ExpiryAlertTable } from "@/components/expiry-alert-table";
+import { UsageTrends } from "@/components/usage-trends";
+import { WasteLossChart } from "@/components/waste-loss-chart";
+import { EconomicLossReport } from "@/components/economic-loss-report";
+import { Activity, Clipboard, DollarSign } from "lucide-react";
 
 export default function DashboardPage() {
   return (
@@ -14,7 +15,9 @@ export default function DashboardPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Ringkasan stok dan status bahan segar SPPG Tanah Sareal</p>
+          <p className="text-muted-foreground">
+            Ringkasan stok dan status bahan segar SPPG Tanah Sareal
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">Ekspor Data</Button>
@@ -25,41 +28,22 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Stok Aktif</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-primary"
-            >
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+            <CardTitle className="text-sm font-medium">
+              Total Stok Aktif
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,245 kg</div>
-            <p className="text-xs text-muted-foreground">Nilai: Rp 24,560,000</p>
+            <p className="text-xs text-muted-foreground">
+              Nilai: Rp 24,560,000
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Batch Aktif</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-primary"
-            >
-              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-              <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-            </svg>
+            <Clipboard className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">45</div>
@@ -78,44 +62,28 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Potensi Food Loss</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-primary"
-            >
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
+            <CardTitle className="text-sm font-medium">
+              Potensi Food Loss
+            </CardTitle>
+            <Activity className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">24.5 kg</div>
-            <p className="text-xs text-muted-foreground">Estimasi: Rp 1,250,000</p>
+            <p className="text-xs text-muted-foreground">
+              Estimasi: Rp 1,250,000
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Stok Menipis</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-primary"
-            >
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+            <DollarSign className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">5 Bahan</div>
-            <p className="text-xs text-muted-foreground">Bayam, Tomat, Telur, Ayam, Wortel</p>
+            <p className="text-xs text-muted-foreground">
+              Bayam, Tomat, Telur, Ayam, Wortel
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -145,5 +113,5 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

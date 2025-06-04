@@ -18,7 +18,6 @@ export default function UsagePage() {
         </div>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -65,7 +64,6 @@ export default function UsagePage() {
         </Card>
       </div>
 
-      {/* Main Content Tabs */}
       <Tabs defaultValue="record" className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="record">Catat Penggunaan</TabsTrigger>
