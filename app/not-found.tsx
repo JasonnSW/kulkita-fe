@@ -1,15 +1,18 @@
-import type React from "react";
-import { DashboardNav } from "@/components/dashboard-nav";
-import { UserNav } from "@/components/user-nav";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { MobileNav } from "@/components/mobile-nav";
 import Image from "next/image";
 import logo from "@/public/logo.svg";
+import { UserNav } from "@/components/user-nav";
+import { DashboardNav } from "@/components/dashboard-nav";
+import ComingSoon from "@/public/coming-soon.svg";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function NotFound() {
+  const router = useRouter();
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -43,7 +46,14 @@ export default function DashboardLayout({
         <aside className="hidden w-64 border-r bg-background md:block">
           <DashboardNav />
         </aside>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <div className="w-screen flex flex-col items-center justify-start px-4 text-center space-y-4">
+          <Image src={ComingSoon} width={400} height={400} alt="Coming soon" />
+          <h1 className="font-serif text-accent-green text-3xl md:text-5xl">Coming Soon</h1>
+          <h2 className="max-w-xl text-black text-base md:text-lg">
+            Maaf, Fitur sedang dalam pengembangan, Silahkan coba menggunakan
+            fitur lain yang tersedia!
+          </h2>
+        </div>
       </div>
     </div>
   );

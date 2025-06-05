@@ -4,10 +4,7 @@ import { Inter, Lalezar } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import localFont from "next/font/local";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryProvider } from "@/providers/react-query-providers";
-
-const queryClient = new QueryClient();
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const lalezar = Lalezar({

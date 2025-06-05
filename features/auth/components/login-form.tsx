@@ -1,21 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useToast } from "@/hooks/use-toast"
-import { loginSchema } from "../schemas/auth"
-
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { loginSchema } from "../schemas/auth";
+import { useLogin } from "../hooks/use-auth";
 
 export function LoginForm() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  const { mutate: login, isPending } = useLogin();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -23,18 +27,10 @@ export function LoginForm() {
       email: "",
       password: "",
     },
-  })
+  });
 
   function onSubmit(values: z.infer<typeof loginSchema>) {
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Login berhasil",
-        description: "Selamat datang kembali di Kulkita",
-      })
-      router.push("/dashboard")
-    }, 1000)
+    login(values);
   }
 
   return (
@@ -66,10 +62,10 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Memproses..." : "Masuk"}
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "Memproses..." : "Masuk"}
         </Button>
       </form>
     </Form>
-  )
+  );
 }

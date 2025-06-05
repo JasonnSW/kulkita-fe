@@ -9,6 +9,27 @@ export const loginSchema = z.object({
   }),
 });
 
+export const registerSchema = z
+  .object({
+    name: z.string().min(2, {
+      message: "Nama minimal 2 karakter.",
+    }),
+    email: z.string().email({
+      message: "Email tidak valid.",
+    }),
+    password: z.string().min(8, {
+      message: "Password minimal 8 karakter.",
+    }),
+    confirmPassword: z.string().min(8, {
+      message: "Konfirmasi password minimal 8 karakter.",
+    }),
+    phone: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password tidak sama.",
+    path: ["confirmPassword"],
+  })
+
 export const codeFormSchema = z.object({
   unitCode: z.string().min(5, {
     message: "Kode unit minimal 5 karakter.",
