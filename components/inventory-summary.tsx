@@ -1,23 +1,31 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 const inventoryData = [
   { category: "Sayur", count: 18, fill: "hsl(var(--chart-1))" },
   { category: "Buah", count: 12, fill: "hsl(var(--chart-2))" },
   { category: "Protein", count: 9, fill: "hsl(var(--chart-3))" },
   { category: "Bahan Pokok", count: 6, fill: "hsl(var(--chart-4))" },
-]
+  { category: "Snack", count: 7, fill: "hsl(var(--chart-5))" },
+  { category: "Minuman", count: 10, fill: "hsl(var(--chart-6))" },
+  { category: "Bumbu", count: 6, fill: "hsl(var(--chart-7))" },
+  { category: "Frozen Food", count: 12, fill: "hsl(var(--chart-8))" },
+];
 
 const statusData = [
   { status: "Aman", count: 32, fill: "#4CAF50" },
   { status: "Waspada", count: 10, fill: "#FFC107" },
   { status: "Kritis", count: 3, fill: "#F44336" },
-]
+];
 
 export function InventorySummary() {
   return (
@@ -41,7 +49,11 @@ export function InventorySummary() {
                   <XAxis dataKey="category" />
                   <YAxis />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="count"
+                    fill="var(--color-count)"
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -68,7 +80,11 @@ export function InventorySummary() {
                   <XAxis type="number" />
                   <YAxis dataKey="status" type="category" />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="count" fill="var(--color-count)" radius={[0, 4, 4, 0]} />
+                  <Bar
+                    dataKey="count"
+                    fill="var(--color-count)"
+                    radius={[0, 4, 4, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -117,5 +133,5 @@ export function InventorySummary() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,21 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useToast } from "@/hooks/use-toast"
-import { unitSchema } from "../schemas/auth"
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { unitSchema } from "../schemas/auth";
+import { useCreateUnit } from "../hooks/use-auth";
 
 export function CreateUnitForm() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  const { mutate: createUnit, isPending } = useCreateUnit();
 
   const form = useForm<z.infer<typeof unitSchema>>({
     resolver: zodResolver(unitSchema),
@@ -25,19 +28,10 @@ export function CreateUnitForm() {
       contactPerson: "",
       contactPhone: "",
     },
-  })
+  });
 
   function onSubmit(values: z.infer<typeof unitSchema>) {
-    setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Unit berhasil dibuat",
-        description: "Anda telah berhasil membuat unit SPPG baru",
-      })
-      router.push("/dashboard")
-    }, 1000)
+    createUnit(values);
   }
 
   return (
@@ -63,7 +57,10 @@ export function CreateUnitForm() {
             <FormItem>
               <FormLabel>Alamat</FormLabel>
               <FormControl>
-                <Textarea placeholder="Jl. Contoh No. 123, Kota Bogor" {...field} />
+                <Textarea
+                  placeholder="Jl. Contoh No. 123, Kota Bogor"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,10 +92,10 @@ export function CreateUnitForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Memproses..." : "Buat Unit SPPG"}
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "Memproses..." : "Buat Unit SPPG"}
         </Button>
       </form>
     </Form>
-  )
+  );
 }

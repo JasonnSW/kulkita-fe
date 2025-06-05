@@ -23,9 +23,9 @@ export default function DashboardLayout({
                   alt="Kulkita Logo"
                   width={36}
                   height={36}
-                  className=""
+                  className="absolute"
                 />
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900 pl-8">
                   ulkita
                 </h1>
               </div>

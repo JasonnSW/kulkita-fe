@@ -1,38 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-
-const formSchema = z
-  .object({
-    name: z.string().min(2, {
-      message: "Nama minimal 2 karakter.",
-    }),
-    email: z.string().email({
-      message: "Email tidak valid.",
-    }),
-    password: z.string().min(8, {
-      message: "Password minimal 8 karakter.",
-    }),
-    confirmPassword: z.string().min(8, {
-      message: "Konfirmasi password minimal 8 karakter.",
-    }),
-    phone: z.string().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Password tidak sama.",
-    path: ["confirmPassword"],
-  })
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { registerSchema } from "../schemas/auth";
+import { useRegister } from "../hooks/use-auth";
 
 export function RegisterForm() {
-  const [isLoading, setIsLoading] = useState(false)
+  const { mutate: register, isPending } = useRegister();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -40,15 +27,10 @@ export function RegisterForm() {
       confirmPassword: "",
       phone: "",
     },
-  })
+  });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // In a real app, this would be an API call
-    setTimeout(() => {
-      setIsLoading(false)
-      console.log(values)
-    }, 1000)
+  function onSubmit(values: z.infer<typeof registerSchema>) {
+    register(values);
   }
 
   return (
@@ -121,5 +103,5 @@ export function RegisterForm() {
         />
       </form>
     </Form>
-  )
+  );
 }
