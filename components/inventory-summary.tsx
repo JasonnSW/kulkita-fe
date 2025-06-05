@@ -15,10 +15,10 @@ const inventoryData = [
   { category: "Buah", count: 12, fill: "hsl(var(--chart-2))" },
   { category: "Protein", count: 9, fill: "hsl(var(--chart-3))" },
   { category: "Bahan Pokok", count: 6, fill: "hsl(var(--chart-4))" },
-  { category: "Snack", count: 7, fill: "hsl(var(--chart-5))" },
-  { category: "Minuman", count: 10, fill: "hsl(var(--chart-6))" },
-  { category: "Bumbu", count: 6, fill: "hsl(var(--chart-7))" },
-  { category: "Frozen Food", count: 12, fill: "hsl(var(--chart-8))" },
+  { category: "Snack", count: 7, fill: "hsl(27, 87%, 67%)" },
+  { category: "Minuman", count: 10, fill: "hsl(200, 85%, 45%)" },
+  { category: "Bumbu", count: 6, fill: "hsl(100, 70%, 50%)" },
+  { category: "Frozen Food", count: 12, fill: "hsl(45, 90%, 60%)" },
 ];
 
 const statusData = [
