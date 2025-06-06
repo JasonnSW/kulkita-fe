@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { InventoryTable } from "@/components/inventory-table"
-import { AddBatchForm } from "@/components/add-batch-form"
+import { InventoryTable } from "@/features/inventory/components/inventory-table"
+import { AddBatchForm } from "@/features/inventory/components/add-batch-form"
 
 export default function InventoryPage() {
   return (
