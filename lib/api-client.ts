@@ -18,9 +18,10 @@ export const apiClient = async <T>(
     `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
     config
   );
+  // console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
 
   const text = await response.text();
-  console.log("Response:", text);
+  // console.log("Response:", text);
 
   const contentType = response.headers.get("content-type");
 
