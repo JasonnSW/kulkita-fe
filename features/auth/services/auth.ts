@@ -6,29 +6,32 @@ import {
   registerSchema,
   unitSchema,
 } from "../schemas/auth";
+import { apiClient } from "@/lib/api-client";
+
+type LoginResponse = {
+  token: string;
+  type: string;
+  email: string;
+  username: string;
+  role: string;
+};
 
 export async function login(payload: z.infer<typeof loginSchema>) {
-  const res = await fetch("/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const res = await apiClient<LoginResponse>("/api/auth/login", "POST", {
     body: JSON.stringify(payload),
+    headers: { "Content-Type": "application/json" },
   });
 
-  if (!res.ok) throw new Error("Login gagal");
-
-  return res.json();
+  return res;
 }
 
 export async function register(payload: z.infer<typeof registerSchema>) {
-  const res = await fetch("/api/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const res = await apiClient("/api/auth/register", "POST", {
     body: JSON.stringify(payload),
+    headers: { "Content-Type": "application/json" },
   });
 
-  if (!res.ok) throw new Error("Registrasi gagal");
-
-  return res.json();
+  return res;
 }
 
 export async function createUnit(payload: z.infer<typeof unitSchema>) {
