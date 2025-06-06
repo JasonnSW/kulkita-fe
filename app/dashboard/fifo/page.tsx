@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FifoRecommendation } from "@/components/fifo-recommendation"
-import { FifoUsageForm } from "@/components/fifo-usage-form"
+import { FifoRecommendation } from "@/features/fifo/components/fifo-recommendation"
+import { FifoUsageForm } from "@/features/fifo/components/fifo-usage-form"
 
 export default function FifoPage() {
   return (
