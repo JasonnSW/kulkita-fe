@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { SpoilageAlertDashboard } from "@/components/spoilage-alert-dashboard"
+import { SpoilageAlertDashboard } from "@/features/predictions/components/spoilage-alert-dashboard"
 import { PredictionModelInsights } from "@/components/prediction-model-insights"
 import { AlertSettings } from "@/components/alert-settings"
 
