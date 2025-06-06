@@ -1,15 +1,41 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { MoreHorizontal, Search } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { MoreHorizontal, Search } from "lucide-react";
+
+type InventoryItem = {
+  id: number;
+  kodeBatch: string;
+  bahan: string;
+  kategori: "Sayuran" | "Buah" | "Protein" | "Bahan Pokok";
+  berat: string;
+  tglMasuk: string;
+  tglExpired: string;
+  lokasi: string;
+  status: "Kritis" | "Waspada" | "Aman";
+};
+
+type InventoryCategory = "all" | "sayur" | "buah" | "protein" | "pokok";
 
 // Sample data
-const inventoryData = {
+const inventoryData: Record<InventoryCategory, InventoryItem[]> = {
   all: [
     {
       id: 1,
@@ -93,26 +119,34 @@ const inventoryData = {
   buah: [],
   protein: [],
   pokok: [],
-}
+};
 
 // Filter data by category
-inventoryData.sayur = inventoryData.all.filter((item) => item.kategori === "Sayuran")
-inventoryData.buah = inventoryData.all.filter((item) => item.kategori === "Buah")
-inventoryData.protein = inventoryData.all.filter((item) => item.kategori === "Protein")
-inventoryData.pokok = inventoryData.all.filter((item) => item.kategori === "Bahan Pokok")
+inventoryData.sayur = inventoryData.all.filter(
+  (item) => item.kategori === "Sayuran"
+);
+inventoryData.buah = inventoryData.all.filter(
+  (item) => item.kategori === "Buah"
+);
+inventoryData.protein = inventoryData.all.filter(
+  (item) => item.kategori === "Protein"
+);
+inventoryData.pokok = inventoryData.all.filter(
+  (item) => item.kategori === "Bahan Pokok"
+);
 
 interface InventoryTableProps {
-  category?: "all" | "sayur" | "buah" | "protein" | "pokok"
+  category?: "all" | "sayur" | "buah" | "protein" | "pokok";
 }
 
 export function InventoryTable({ category = "all" }: InventoryTableProps) {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = inventoryData[category].filter(
     (item) =>
       item.kodeBatch.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.bahan.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      item.bahan.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-4">
@@ -148,7 +182,13 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
           {filteredData.map((item) => (
             <TableRow
               key={item.id}
-              className={item.status === "Kritis" ? "bg-red-50" : item.status === "Waspada" ? "bg-yellow-50" : ""}
+              className={
+                item.status === "Kritis"
+                  ? "bg-red-50"
+                  : item.status === "Waspada"
+                  ? "bg-yellow-50"
+                  : ""
+              }
             >
               <TableCell className="font-medium">{item.kodeBatch}</TableCell>
               <TableCell>{item.bahan}</TableCell>
@@ -164,8 +204,8 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
                     item.status === "Kritis"
                       ? "border-red-500 text-red-500"
                       : item.status === "Waspada"
-                        ? "border-yellow-500 text-yellow-500"
-                        : "border-green-500 text-green-500"
+                      ? "border-yellow-500 text-yellow-500"
+                      : "border-green-500 text-green-500"
                   }
                 >
                   {item.status}
@@ -192,5 +232,5 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

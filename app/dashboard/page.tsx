@@ -2,14 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { InventorySummary } from "@/components/inventory-summary";
-import { ExpiryAlertTable } from "@/components/expiry-alert-table";
-import { UsageTrends } from "@/components/usage-trends";
-import { WasteLossChart } from "@/components/waste-loss-chart";
-import { EconomicLossReport } from "@/components/economic-loss-report";
+import { InventorySummary } from "@/features/dashboard/components/inventory-summary";
+import { ExpiryAlertTable } from "@/features/dashboard/components/expiry-alert-table";
+import { UsageTrends } from "@/features/dashboard/components/usage-trends";
+import { WasteLossChart } from "@/features/dashboard/components/waste-loss-chart";
+import { EconomicLossReport } from "@/features/dashboard/components/economic-loss-report";
 import { Activity, Clipboard, DollarSign } from "lucide-react";
+import { HydrationBoundary } from "@tanstack/react-query";
+import { getDehydratedDashboardState } from "@/features/dashboard/hooks/use-dashboard";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { state } = await getDehydratedDashboardState();
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -96,21 +99,23 @@ export default function DashboardPage() {
           <TabsTrigger value="waste">Waste Loss</TabsTrigger>
           <TabsTrigger value="economic">Kerugian Ekonomi</TabsTrigger>
         </TabsList>
-        <TabsContent value="inventory" className="space-y-4">
-          <InventorySummary />
-        </TabsContent>
-        <TabsContent value="expiry" className="space-y-4">
-          <ExpiryAlertTable />
-        </TabsContent>
-        <TabsContent value="usage" className="space-y-4">
-          <UsageTrends />
-        </TabsContent>
-        <TabsContent value="waste" className="space-y-4">
-          <WasteLossChart />
-        </TabsContent>
-        <TabsContent value="economic" className="space-y-4">
-          <EconomicLossReport />
-        </TabsContent>
+        <HydrationBoundary state={state}>
+          <TabsContent value="inventory" className="space-y-4">
+            <InventorySummary />
+          </TabsContent>
+          <TabsContent value="expiry" className="space-y-4">
+            <ExpiryAlertTable />
+          </TabsContent>
+          <TabsContent value="usage" className="space-y-4">
+            <UsageTrends />
+          </TabsContent>
+          <TabsContent value="waste" className="space-y-4">
+            <WasteLossChart />
+          </TabsContent>
+          <TabsContent value="economic" className="space-y-4">
+            <EconomicLossReport />
+          </TabsContent>
+        </HydrationBoundary>
       </Tabs>
     </div>
   );

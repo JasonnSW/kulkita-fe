@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ForecastSummary } from "@/components/forecast-summary"
-import { ForecastRecommendation } from "@/components/forecast-recommendation"
-import { ForecastSettings } from "@/components/forecast-settings"
+import { ForecastSummary } from "@/features/forecast/components/forecast-summary"
+import { ForecastRecommendation } from "@/features/forecast/components/forecast-recommendation"
+import { ForecastSettings } from "@/features/forecast/components/forecast-settings"
 
 export default function ForecastPage() {
   return (

@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertCircle, ArrowRight, CheckCircle2, Clock, ThermometerIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { SpoilageAlertTable } from "@/components/spoilage-alert-table"
+import { SpoilageAlertTable } from "@/features/predictions/components/spoilage-alert-table"
 
 const alertSummary = [
   { status: "Kritis", count: 3, icon: AlertCircle, color: "text-red-500" },

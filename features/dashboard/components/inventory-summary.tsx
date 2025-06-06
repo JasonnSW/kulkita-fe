@@ -9,6 +9,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useQuery } from "@tanstack/react-query";
+import { getDashboardSummary } from "../services/dashboard";
 
 const inventoryData = [
   { category: "Sayur", count: 18, fill: "hsl(var(--chart-1))" },
@@ -28,6 +30,10 @@ const statusData = [
 ];
 
 export function InventorySummary() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["dashboard", "summary"],
+    queryFn: getDashboardSummary,
+  });
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Card className="col-span-2">

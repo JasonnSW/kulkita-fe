@@ -1,14 +1,42 @@
-"use client"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+"use client";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Sample data
-const alertData = {
+
+type AlertItem = {
+  id: number;
+  kodeBatch: string;
+  bahan: string;
+  kategori: string;
+  tglMasuk: string;
+  tglExpired: string;
+  prediksiSpoilage: string;
+  konfidensiBusuk: number;
+  faktorUtama: string;
+  status: "Kritis" | "Waspada" | "Aman";
+};
+
+type AlertCategory = "all" | "critical" | "warning";
+
+const alertData: Record<AlertCategory, AlertItem[]> = {
   critical: [
     {
       id: 1,
@@ -86,7 +114,7 @@ const alertData = {
     },
   ],
   all: [], // Will be populated below
-}
+};
 
 // Combine critical and warning for "all" category and add some safe items
 alertData.all = [
@@ -116,22 +144,22 @@ alertData.all = [
     faktorUtama: "Normal",
     status: "Aman",
   },
-]
+];
 
 interface SpoilageAlertTableProps {
-  status: "critical" | "warning" | "all"
+  status: "critical" | "warning" | "all";
 }
 
 export function SpoilageAlertTable({ status }: SpoilageAlertTableProps) {
-  const { toast } = useToast()
-  const data = alertData[status]
+  const { toast } = useToast();
+  const data = alertData[status];
 
   const handleAction = (action: string, batch: string) => {
     toast({
       title: `Tindakan ${action} untuk ${batch}`,
       description: "Status bahan telah diperbarui",
-    })
-  }
+    });
+  };
 
   return (
     <Table>
@@ -151,7 +179,11 @@ export function SpoilageAlertTable({ status }: SpoilageAlertTableProps) {
           <TableRow
             key={item.id}
             className={
-              item.status === "Kritis" ? "bg-red-50" : item.status === "Waspada" ? "bg-yellow-50" : "bg-green-50"
+              item.status === "Kritis"
+                ? "bg-red-50"
+                : item.status === "Waspada"
+                ? "bg-yellow-50"
+                : "bg-green-50"
             }
           >
             <TableCell className="font-medium">{item.kodeBatch}</TableCell>
@@ -165,15 +197,15 @@ export function SpoilageAlertTable({ status }: SpoilageAlertTableProps) {
                     item.konfidensiBusuk > 80
                       ? "bg-red-100"
                       : item.konfidensiBusuk > 40
-                        ? "bg-yellow-100"
-                        : "bg-green-100"
+                      ? "bg-yellow-100"
+                      : "bg-green-100"
                   }`}
                   indicatorClassName={
                     item.konfidensiBusuk > 80
                       ? "bg-red-500"
                       : item.konfidensiBusuk > 40
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
+                      ? "bg-yellow-500"
+                      : "bg-green-500"
                   }
                 />
                 <span className="text-xs">{item.konfidensiBusuk}%</span>
@@ -187,8 +219,8 @@ export function SpoilageAlertTable({ status }: SpoilageAlertTableProps) {
                   item.status === "Kritis"
                     ? "border-red-500 text-red-500"
                     : item.status === "Waspada"
-                      ? "border-yellow-500 text-yellow-500"
-                      : "border-green-500 text-green-500"
+                    ? "border-yellow-500 text-yellow-500"
+                    : "border-green-500 text-green-500"
                 }
               >
                 {item.status}
@@ -203,13 +235,19 @@ export function SpoilageAlertTable({ status }: SpoilageAlertTableProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleAction("Gunakan", item.kodeBatch)}>
+                  <DropdownMenuItem
+                    onClick={() => handleAction("Gunakan", item.kodeBatch)}
+                  >
                     Gunakan Segera
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleAction("Redistribusi", item.kodeBatch)}>
+                  <DropdownMenuItem
+                    onClick={() => handleAction("Redistribusi", item.kodeBatch)}
+                  >
                     Redistribusi
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleAction("Buang", item.kodeBatch)}>
+                  <DropdownMenuItem
+                    onClick={() => handleAction("Buang", item.kodeBatch)}
+                  >
                     Tandai Busuk
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -219,5 +257,5 @@ export function SpoilageAlertTable({ status }: SpoilageAlertTableProps) {
         ))}
       </TableBody>
     </Table>
-  )
+  );
 }

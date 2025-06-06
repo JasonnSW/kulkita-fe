@@ -2,19 +2,19 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import {
-  login,
   register,
   createUnit,
   codeForm,
   InviteForm,
 } from "../services/auth";
+import { loginAction } from "../actions/auth";
 
 export function useLogin() {
   const router = useRouter();
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: login,
+    mutationFn: loginAction,
     onSuccess: () => {
       toast({
         title: "Login berhasil",
