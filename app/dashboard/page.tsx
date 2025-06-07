@@ -1,15 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { InventorySummary } from "@/features/dashboard/components/inventory-summary";
 import { ExpiryAlertTable } from "@/features/dashboard/components/expiry-alert-table";
 import { UsageTrends } from "@/features/dashboard/components/usage-trends";
 import { WasteLossChart } from "@/features/dashboard/components/waste-loss-chart";
 import { EconomicLossReport } from "@/features/dashboard/components/economic-loss-report";
-import { Activity, Clipboard, DollarSign } from "lucide-react";
 import { HydrationBoundary } from "@tanstack/react-query";
 import { getDehydratedDashboardState } from "@/features/dashboard/hooks/use-dashboard";
+import SummaryCard from "@/features/dashboard/components/summary-card";
 
 export default async function DashboardPage() {
   const { state } = await getDehydratedDashboardState();
@@ -28,78 +26,16 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Stok Aktif
-            </CardTitle>
-            <DollarSign className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,245 kg</div>
-            <p className="text-xs text-muted-foreground">
-              Nilai: Rp 24,560,000
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Batch Aktif</CardTitle>
-            <Clipboard className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">45</div>
-            <div className="flex gap-2 mt-1">
-              <Badge variant="outline" className="bg-green-50">
-                32 Aman
-              </Badge>
-              <Badge variant="outline" className="bg-yellow-50">
-                10 Waspada
-              </Badge>
-              <Badge variant="outline" className="bg-red-50">
-                3 Kritis
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Potensi Food Loss
-            </CardTitle>
-            <Activity className="w-4 h-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">24.5 kg</div>
-            <p className="text-xs text-muted-foreground">
-              Estimasi: Rp 1,250,000
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Stok Menipis</CardTitle>
-            <DollarSign className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">5 Bahan</div>
-            <p className="text-xs text-muted-foreground">
-              Bayam, Tomat, Telur, Ayam, Wortel
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="inventory">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="inventory">Status Stok</TabsTrigger>
-          <TabsTrigger value="expiry">Mendekati Kadaluarsa</TabsTrigger>
-          <TabsTrigger value="usage">Tren Penggunaan</TabsTrigger>
-          <TabsTrigger value="waste">Waste Loss</TabsTrigger>
-          <TabsTrigger value="economic">Kerugian Ekonomi</TabsTrigger>
-        </TabsList>
-        <HydrationBoundary state={state}>
+      <HydrationBoundary state={state}>
+        <SummaryCard />
+        <Tabs defaultValue="inventory">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="inventory">Status Stok</TabsTrigger>
+            <TabsTrigger value="expiry">Mendekati Kadaluarsa</TabsTrigger>
+            <TabsTrigger value="usage">Tren Penggunaan</TabsTrigger>
+            <TabsTrigger value="waste">Waste Loss</TabsTrigger>
+            <TabsTrigger value="economic">Kerugian Ekonomi</TabsTrigger>
+          </TabsList>
           <TabsContent value="inventory" className="space-y-4">
             <InventorySummary />
           </TabsContent>
@@ -115,8 +51,8 @@ export default async function DashboardPage() {
           <TabsContent value="economic" className="space-y-4">
             <EconomicLossReport />
           </TabsContent>
-        </HydrationBoundary>
-      </Tabs>
+        </Tabs>
+      </HydrationBoundary>
     </div>
   );
 }

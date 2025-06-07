@@ -9,15 +9,16 @@ import {
 export async function getDehydratedDashboardState() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["dashboard", "summary"],
-    queryFn: getDashboardSummary,
-  });
-
-  await queryClient.prefetchQuery({
-    queryKey: ["dashboard", "expiry-alerts"],
-    queryFn: getDashboardExpiryAlerts,
-  });
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["dashboard", "summary"],
+      queryFn: getDashboardSummary,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["dashboard", "expiry-alerts"],
+      queryFn: getDashboardExpiryAlerts,
+    }),
+  ]);
 
   return {
     state: dehydrate(queryClient),

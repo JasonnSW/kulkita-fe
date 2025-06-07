@@ -3,7 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
@@ -12,17 +19,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardSummary } from "../services/dashboard";
 
-const inventoryData = [
-  { category: "Sayur", count: 18, fill: "hsl(var(--chart-1))" },
-  { category: "Buah", count: 12, fill: "hsl(var(--chart-2))" },
-  { category: "Protein", count: 9, fill: "hsl(var(--chart-3))" },
-  { category: "Bahan Pokok", count: 6, fill: "hsl(var(--chart-4))" },
-  { category: "Snack", count: 7, fill: "hsl(27, 87%, 67%)" },
-  { category: "Minuman", count: 10, fill: "hsl(200, 85%, 45%)" },
-  { category: "Bumbu", count: 6, fill: "hsl(100, 70%, 50%)" },
-  { category: "Frozen Food", count: 12, fill: "hsl(45, 90%, 60%)" },
-];
-
 const statusData = [
   { status: "Aman", count: 32, fill: "#4CAF50" },
   { status: "Waspada", count: 10, fill: "#FFC107" },
@@ -30,10 +26,21 @@ const statusData = [
 ];
 
 export function InventorySummary() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<any, any, any>({
     queryKey: ["dashboard", "summary"],
     queryFn: getDashboardSummary,
   });
+
+  const top8Ingredients =
+    data?.ingredientSummaries
+      ?.slice()
+      .sort((a: any, b: any) => b.batchCount - a.batchCount)
+      .slice(0, 8)
+      .map((item: any, index: any) => ({
+        ...item,
+        fill: `hsl(${(index * 45) % 360}, 70%, 50%)`,
+      })) || [];
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Card className="col-span-2">
@@ -51,12 +58,12 @@ export function InventorySummary() {
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={inventoryData}>
-                  <XAxis dataKey="category" />
+                <BarChart data={top8Ingredients}>
+                  <XAxis dataKey="ingredientName" />
                   <YAxis />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar
-                    dataKey="count"
+                    dataKey="batchCount"
                     fill="var(--color-count)"
                     radius={[4, 4, 0, 0]}
                   />
@@ -82,15 +89,27 @@ export function InventorySummary() {
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={statusData} layout="vertical">
+                <BarChart
+                  data={data?.freshnessStatusSummaries}
+                  layout="vertical"
+                >
                   <XAxis type="number" />
                   <YAxis dataKey="status" type="category" />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="count"
-                    fill="var(--color-count)"
-                    radius={[0, 4, 4, 0]}
-                  />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                    {data?.freshnessStatusSummaries.map(
+                      (entry: any, index: number) => {
+                        let fillColor = "#4CAF50";
+                        if (entry.status === "RED") fillColor = "#EF4444";
+                        else if (entry.status === "GREEN")
+                          fillColor = "#4CAF50";
+                        else if (entry.status === "ORANGE")
+                          fillColor = "#F97316";
+
+                        return <Cell key={`cell-${index}`} fill={fillColor} />;
+                      }
+                    )}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -103,36 +122,26 @@ export function InventorySummary() {
           <CardTitle>Lokasi Penyimpanan</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Kulkas 1</div>
-                <div className="text-xs text-muted-foreground">18 batch</div>
-              </div>
-              <Badge className="bg-primary">Aktif</Badge>
+          {data?.storageLocationSummaries && (
+            <div className="max-h-64 overflow-y-auto space-y-4 pr-2">
+              {data.storageLocationSummaries.map((storage: any) => (
+                <div
+                  key={storage.id}
+                  className="flex justify-between items-center"
+                >
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium">
+                      {storage.location}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {storage.batchCount} batch
+                    </div>
+                  </div>
+                  <Badge className="bg-primary">Aktif</Badge>
+                </div>
+              ))}
             </div>
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Kulkas 2</div>
-                <div className="text-xs text-muted-foreground">12 batch</div>
-              </div>
-              <Badge className="bg-primary">Aktif</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Freezer 1</div>
-                <div className="text-xs text-muted-foreground">9 batch</div>
-              </div>
-              <Badge className="bg-primary">Aktif</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Gudang Kering</div>
-                <div className="text-xs text-muted-foreground">6 batch</div>
-              </div>
-              <Badge className="bg-primary">Aktif</Badge>
-            </div>
-          </div>
+          )}
           <Button variant="outline" className="w-full mt-4">
             Kelola Lokasi
           </Button>

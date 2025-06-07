@@ -1,5 +1,4 @@
 "use client";
-
 import {
   HydrationBoundary,
   QueryClient,
@@ -14,7 +13,18 @@ export function ReactQueryProvider({
   children: ReactNode;
   dehydratedState?: unknown;
 }) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5, 
+            refetchOnMount: false,
+            refetchOnWindowFocus: false,
+          },
+        },
+      })
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
