@@ -19,12 +19,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardSummary } from "../services/dashboard";
 
-const statusData = [
-  { status: "Aman", count: 32, fill: "#4CAF50" },
-  { status: "Waspada", count: 10, fill: "#FFC107" },
-  { status: "Kritis", count: 3, fill: "#F44336" },
-];
-
 export function InventorySummary() {
   const { data, isLoading } = useQuery<any, any, any>({
     queryKey: ["dashboard", "summary"],
@@ -105,7 +99,6 @@ export function InventorySummary() {
                           fillColor = "#4CAF50";
                         else if (entry.status === "ORANGE")
                           fillColor = "#F97316";
-
                         return <Cell key={`cell-${index}`} fill={fillColor} />;
                       }
                     )}
@@ -124,22 +117,24 @@ export function InventorySummary() {
         <CardContent>
           {data?.storageLocationSummaries && (
             <div className="max-h-64 overflow-y-auto space-y-4 pr-2">
-              {data.storageLocationSummaries.map((storage: any) => (
-                <div
-                  key={storage.id}
-                  className="flex justify-between items-center"
-                >
-                  <div className="space-y-1">
-                    <div className="text-sm font-medium">
-                      {storage.location}
+              {data.storageLocationSummaries.map(
+                (storage: any, index: number) => (
+                  <div
+                    key={`${storage.location}-${index}`}
+                    className="flex justify-between items-center"
+                  >
+                    <div className="space-y-1">
+                      <div className="text-sm font-medium">
+                        {storage.location}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {storage.batchCount} batch
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {storage.batchCount} batch
-                    </div>
+                    <Badge className="bg-primary">Aktif</Badge>
                   </div>
-                  <Badge className="bg-primary">Aktif</Badge>
-                </div>
-              ))}
+                )
+              )}
             </div>
           )}
           <Button variant="outline" className="w-full mt-4">

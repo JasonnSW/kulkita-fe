@@ -1,63 +1,47 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useToast } from "@/hooks/use-toast"
-
-const formSchema = z.object({
-  bahan: z.string({
-    required_error: "Pilih bahan.",
-  }),
-  kategori: z.string({
-    required_error: "Pilih kategori bahan.",
-  }),
-  berat: z.string().min(1, {
-    message: "Masukkan berat bahan.",
-  }),
-  satuan: z.string({
-    required_error: "Pilih satuan.",
-  }),
-  sumber: z.string().min(2, {
-    message: "Masukkan sumber bahan.",
-  }),
-  lokasi: z.string({
-    required_error: "Pilih lokasi penyimpanan.",
-  }),
-})
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { inventorySchema } from "../schemas/inventory";
+import { useCreateBatch } from "../mutations/use-create-batch";
 
 export function AddBatchForm() {
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  const { mutate: createBatch, isPending } = useCreateBatch();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof inventorySchema>>({
+    resolver: zodResolver(inventorySchema),
     defaultValues: {
-      bahan: "",
-      kategori: "",
-      berat: "",
-      satuan: "",
-      sumber: "",
-      lokasi: "",
+      ingredientName: "",
+      weight: "",
+      unit: "",
+      category: "",
+      source: "",
+      storageLocation: "",
+      notes: "",
     },
-  })
+  });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Batch berhasil ditambahkan",
-        description: "Batch baru telah berhasil ditambahkan ke inventaris",
-      })
-      form.reset()
-    }, 1000)
+  function onSubmit(values: z.infer<typeof inventorySchema>) {
+    createBatch(values);
+    form.reset();
   }
 
   return (
@@ -66,11 +50,14 @@ export function AddBatchForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
-            name="bahan"
+            name="ingredientName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nama Bahan</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih bahan" />
@@ -93,11 +80,14 @@ export function AddBatchForm() {
 
           <FormField
             control={form.control}
-            name="kategori"
+            name="category"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kategori</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih kategori" />
@@ -117,7 +107,7 @@ export function AddBatchForm() {
 
           <FormField
             control={form.control}
-            name="berat"
+            name="weight"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Berat/Jumlah</FormLabel>
@@ -131,11 +121,14 @@ export function AddBatchForm() {
 
           <FormField
             control={form.control}
-            name="satuan"
+            name="unit"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Satuan</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih satuan" />
@@ -156,7 +149,7 @@ export function AddBatchForm() {
 
           <FormField
             control={form.control}
-            name="sumber"
+            name="source"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Sumber Bahan</FormLabel>
@@ -170,21 +163,24 @@ export function AddBatchForm() {
 
           <FormField
             control={form.control}
-            name="lokasi"
+            name="storageLocation"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Lokasi Penyimpanan</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih lokasi" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="kulkas1">Kulkas 1</SelectItem>
-                    <SelectItem value="kulkas2">Kulkas 2</SelectItem>
-                    <SelectItem value="freezer1">Freezer 1</SelectItem>
-                    <SelectItem value="gudang">Gudang Kering</SelectItem>
+                    <SelectItem value="Kulkas 1">Kulkas 1</SelectItem>
+                    <SelectItem value="Kulkas 2">Kulkas 2</SelectItem>
+                    <SelectItem value="Freezer 1">Freezer 1</SelectItem>
+                    <SelectItem value="Gudang">Gudang Kering</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -194,11 +190,11 @@ export function AddBatchForm() {
         </div>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Memproses..." : "Tambah Batch"}
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Memproses..." : "Tambah Batch"}
           </Button>
         </div>
       </form>
     </Form>
-  )
+  );
 }
