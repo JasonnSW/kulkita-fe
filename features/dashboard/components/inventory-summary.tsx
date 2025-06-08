@@ -18,6 +18,15 @@ import {
 } from "@/components/ui/chart";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardSummary } from "../services/dashboard";
+import { Skeleton } from "@/components/ui/skeleton";
+
+type Status = "GREEN" | "YELLOW" | "RED";
+
+const colorMap: Record<Status, string> = {
+  GREEN: "#4CAF50",
+  YELLOW: "#FFC107",
+  RED: "#EF4444",
+};
 
 export function InventorySummary() {
   const { data, isLoading } = useQuery<any, any, any>({
@@ -35,6 +44,21 @@ export function InventorySummary() {
         fill: `hsl(${(index * 45) % 360}, 70%, 50%)`,
       })) || [];
 
+  const freshnessData = data?.freshnessStatusSummaries
+    ?.slice()
+    .sort((a: { status: Status }, b: { status: Status }) => {
+      const order: Record<Status, number> = {
+        GREEN: 0,
+        YELLOW: 1,
+        RED: 2,
+      };
+      return order[a.status] - order[b.status];
+    })
+    .map((entry: { status: Status; [key: string]: any }) => {
+      const fillColor = colorMap[entry.status];
+      return { ...entry, fillColor };
+    });
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Card className="col-span-2">
@@ -43,27 +67,31 @@ export function InventorySummary() {
         </CardHeader>
         <CardContent>
           <div className="max-h-dvh">
-            <ChartContainer
-              config={{
-                count: {
-                  label: "Jumlah Batch",
-                  color: "hsl(var(--chart-1))",
-                },
-              }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={top8Ingredients}>
-                  <XAxis dataKey="ingredientName" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="batchCount"
-                    fill="var(--color-count)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+            {isLoading ? (
+              <Skeleton className="w-full h-[300px] rounded-md" />
+            ) : (
+              <ChartContainer
+                config={{
+                  batchCount: {
+                    label: "Jumlah Batch",
+                    color: "#4CAF50",
+                  },
+                }}
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={top8Ingredients}>
+                    <XAxis dataKey="ingredientName" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar
+                      dataKey="batchCount"
+                      fill="var(--color-batchCount)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -83,25 +111,23 @@ export function InventorySummary() {
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={data?.freshnessStatusSummaries}
-                  layout="vertical"
-                >
+                <BarChart data={freshnessData} layout="vertical">
                   <XAxis type="number" />
-                  <YAxis dataKey="status" type="category" />
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <YAxis
+                    dataKey="status"
+                    type="category"
+                    tickFormatter={(value: string) => {
+                      if (value === "RED") return "Kritis";
+                      if (value === "YELLOW") return "Waspada";
+                      if (value === "GREEN") return "Aman";
+                      return value;
+                    }}
+                  />
+                  <ChartTooltip content={<CustomTooltipContent />} />
                   <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                    {data?.freshnessStatusSummaries.map(
-                      (entry: any, index: number) => {
-                        let fillColor = "#4CAF50";
-                        if (entry.status === "RED") fillColor = "#EF4444";
-                        else if (entry.status === "GREEN")
-                          fillColor = "#4CAF50";
-                        else if (entry.status === "ORANGE")
-                          fillColor = "#F97316";
-                        return <Cell key={`cell-${index}`} fill={fillColor} />;
-                      }
-                    )}
+                    {freshnessData.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={entry.fillColor} />
+                    ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -145,3 +171,34 @@ export function InventorySummary() {
     </div>
   );
 }
+
+export const CustomTooltipContent = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const statusLabel =
+      label === "RED"
+        ? "Kritis"
+        : label === "YELLOW"
+        ? "Waspada"
+        : label === "GREEN"
+        ? "Aman"
+        : label;
+
+    const statusColor = colorMap[label as Status];
+
+    return (
+      <div className="bg-background border rounded-lg shadow-lg p-3">
+        <p className="text-xs font-medium">{statusLabel}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <div
+            className="w-3 h-3 rounded border"
+            style={{ backgroundColor: statusColor, borderColor: statusColor }}
+          />
+          <p className="text-xs text-muted-foreground">
+            Jumlah Batch: {payload[0].value}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};

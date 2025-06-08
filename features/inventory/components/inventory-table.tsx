@@ -32,9 +32,13 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
   const { data, isLoading } = useQuery<any, any, any>({
     queryKey: ["inventory", "items"],
     queryFn: getAllInventoryItems,
+    placeholderData: (previousData: any) => previousData,
   });
 
-  const filteredData = (data ?? []).filter((item: any) => {
+  console.log("Inventory data:", data);
+  const items = Array.isArray(data) ? data : [];
+
+  const filteredData = items.filter((item: any) => {
     const matchesCategory =
       category === "all" ||
       (category === "sayur" && item.category === "Sayuran") ||
@@ -87,7 +91,7 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
                   Memuat data...
                 </TableCell>
               </TableRow>
-            ) : data && data.length > 0 ? (
+            ) : items && items.length > 0 ? (
               filteredData.map((item: any) => (
                 <TableRow
                   key={item.id}

@@ -1,15 +1,22 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FifoRecommendation } from "@/features/fifo/components/fifo-recommendation"
-import { FifoUsageForm } from "@/features/fifo/components/fifo-usage-form"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FifoRecommendation } from "@/features/fifo/components/fifo-recommendation";
+import { FifoUsageForm } from "@/features/fifo/components/fifo-usage-form";
+import { getDehydratedFifoState } from "@/features/fifo/queries/fifo";
+import { HydrationBoundary } from "@tanstack/react-query";
 
-export default function FifoPage() {
+export default async function FifoPage() {
+  const { state } = await getDehydratedFifoState();
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">FIFO Optimization</h1>
-          <p className="text-muted-foreground">Optimasi penggunaan bahan dengan prinsip First In, First Out</p>
+          <h1 className="text-2xl font-bold tracking-tight">
+            FIFO Optimization
+          </h1>
+          <p className="text-muted-foreground">
+            Optimasi penggunaan bahan dengan prinsip First In, First Out
+          </p>
         </div>
         <Button>Gunakan Bahan</Button>
       </div>
@@ -20,7 +27,9 @@ export default function FifoPage() {
             <CardTitle>Rekomendasi Penggunaan Bahan (FIFO)</CardTitle>
           </CardHeader>
           <CardContent>
-            <FifoRecommendation />
+            <HydrationBoundary state={state}>
+              <FifoRecommendation />
+            </HydrationBoundary>
           </CardContent>
         </Card>
 
@@ -43,5 +52,5 @@ export default function FifoPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

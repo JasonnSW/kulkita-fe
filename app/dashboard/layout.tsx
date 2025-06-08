@@ -4,6 +4,7 @@ import { UserNav } from "@/components/user-nav";
 import { MobileNav } from "@/components/mobile-nav";
 import Image from "next/image";
 import logo from "@/public/logo.svg";
+import { NotificationPanel } from "@/components/notification-panel";
 
 export default function DashboardLayout({
   children,
@@ -37,6 +38,9 @@ export default function DashboardLayout({
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <UserNav />
+        </div>
+        <div>
+          <NotificationPanel />
         </div>
       </header>
       <div className="flex flex-1">

@@ -1,18 +1,29 @@
-import { Suspense } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { UsageForm } from "@/features/usage/components/usage-form"
-import { UsageHistory } from "@/features/usage/components/usage-history"
-import { UsageAnalytics } from "@/features/usage/components/usage-analytics"
-import { UsageReport } from "@/features/usage/components/usage-report"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ClipboardList, TrendingUp, FileText, Plus } from "lucide-react"
+import { Suspense } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UsageForm } from "@/features/usage/components/usage-form";
+import { UsageHistory } from "@/features/usage/components/usage-history";
+import { UsageAnalytics } from "@/features/usage/components/usage-analytics";
+import { UsageReport } from "@/features/usage/components/usage-report";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ClipboardList, TrendingUp, FileText, Plus } from "lucide-react";
+import { getDehydratedInventoryState } from "@/features/inventory/queries/use-inventory-items";
+import { HydrationBoundary } from "@tanstack/react-query";
 
-export default function UsagePage() {
+export default async function UsagePage() {
+  const { state } = await getDehydratedInventoryState();
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900">Penggunaan Bahan</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+          Penggunaan Bahan
+        </h2>
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-500">SPPG Kulkita</span>
         </div>
@@ -21,7 +32,9 @@ export default function UsagePage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Penggunaan Hari Ini</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Penggunaan Hari Ini
+            </CardTitle>
             <ClipboardList className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
@@ -32,7 +45,9 @@ export default function UsagePage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Minggu Ini</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Minggu Ini
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
@@ -43,7 +58,9 @@ export default function UsagePage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Efisiensi Penggunaan</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Efisiensi Penggunaan
+            </CardTitle>
             <FileText className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
@@ -79,12 +96,16 @@ export default function UsagePage() {
                 <Plus className="h-5 w-5 text-green-600" />
                 Catat Penggunaan Bahan
               </CardTitle>
-              <CardDescription>Catat penggunaan bahan makanan untuk persiapan menu harian</CardDescription>
+              <CardDescription>
+                Catat penggunaan bahan makanan untuk persiapan menu harian
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-                <UsageForm />
-              </Suspense>
+              <HydrationBoundary state={state}>
+                <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+                  <UsageForm />
+                </Suspense>
+              </HydrationBoundary>
             </CardContent>
           </Card>
         </TabsContent>
@@ -96,7 +117,10 @@ export default function UsagePage() {
                 <ClipboardList className="h-5 w-5 text-blue-600" />
                 Riwayat Penggunaan
               </CardTitle>
-              <CardDescription>Lihat riwayat penggunaan bahan makanan dan filter berdasarkan periode</CardDescription>
+              <CardDescription>
+                Lihat riwayat penggunaan bahan makanan dan filter berdasarkan
+                periode
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Suspense fallback={<Skeleton className="h-96 w-full" />}>
@@ -113,7 +137,9 @@ export default function UsagePage() {
                 <TrendingUp className="h-5 w-5 text-purple-600" />
                 Analisis Penggunaan
               </CardTitle>
-              <CardDescription>Analisis pola penggunaan bahan dan tren konsumsi</CardDescription>
+              <CardDescription>
+                Analisis pola penggunaan bahan dan tren konsumsi
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Suspense fallback={<Skeleton className="h-96 w-full" />}>
@@ -130,7 +156,9 @@ export default function UsagePage() {
                 <FileText className="h-5 w-5 text-orange-600" />
                 Laporan Penggunaan
               </CardTitle>
-              <CardDescription>Generate laporan penggunaan untuk periode tertentu</CardDescription>
+              <CardDescription>
+                Generate laporan penggunaan untuk periode tertentu
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Suspense fallback={<Skeleton className="h-96 w-full" />}>
@@ -141,5 +169,5 @@ export default function UsagePage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
