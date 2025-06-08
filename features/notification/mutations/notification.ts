@@ -6,14 +6,19 @@ import {
 } from "../services/notification";
 import { toast } from "sonner";
 
-export function useMarkNotificationAsRead(notificationId: string) {
+export function useMarkNotificationAsRead() {
   const queryClient = new QueryClient();
   return useMutation({
-    mutationKey: ["notification", "mark-as-read", notificationId],
-    mutationFn: markNotificationAsRead,
+    mutationKey: ["notification", "mark-as-read"],
+    mutationFn: (notificationIds: string[]) =>
+    markNotificationAsRead(notificationIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
+      toast.success("Notification marked as read successfully");
+    },
+    onError: () => {
+      toast.error("Failed to mark notification as read");
     },
   });
 }
@@ -26,6 +31,10 @@ export function useMarkAllNotificationsAsRead() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
+      toast.success("Notification marked as read successfully");
+    },
+    onError: () => {
+      toast.error("Failed to mark all notifications as read");
     },
   });
 }

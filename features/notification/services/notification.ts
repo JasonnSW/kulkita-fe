@@ -33,7 +33,7 @@ export async function markAllNotificationAsRead() {
   const res = await apiClient(`/api/notifications/mark-all-read`, "PUT", {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}}`,
+      Authorization: `Bearer ${token}`,
     },
   });
   return res;
@@ -45,20 +45,21 @@ export async function deleteNotification(id: string) {
   const res = await apiClient(`/api/notifications/${id}`, "DELETE", {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}}`,
+      Authorization: `Bearer ${token}`,
     },
   });
   return res;
 }
 
-export async function markNotificationAsRead() {
+export async function markNotificationAsRead(notificationIds: string[]) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value || "";
   const res = await apiClient(`/api/notifications/mark-read`, "PUT", {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}}`,
+      Authorization: `Bearer ${token}`,
     },
+    body: JSON.stringify(notificationIds), 
   });
   return res;
 }

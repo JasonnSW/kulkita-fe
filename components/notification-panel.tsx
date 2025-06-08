@@ -17,6 +17,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AllNotifications } from "./all-notifications";
 import { useRouter } from "next/navigation";
 import { useGetNotifications } from "@/features/notification/queries/notification";
+import {
+  useDeleteNotification,
+  useMarkAllNotificationsAsRead,
+  useMarkNotificationAsRead,
+} from "@/features/notification/mutations/notification";
 
 interface ApiNotification {
   id: string;
@@ -34,10 +39,6 @@ interface ApiNotification {
   priorityColor: string;
 }
 
-interface ApiResponse {
-  content: ApiNotification[];
-}
-
 interface NotificationPanelProps {
   onShowAllNotifications?: () => void;
 }
@@ -53,25 +54,38 @@ export function NotificationPanel({
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [showAllNotifications, setShowAllNotifications] = useState(false);
 
+  const [deletedNotifications, setDeletedNotifications] = useState<string[]>(
+    []
+  );
+  const [readNotifications, setReadNotifications] = useState<string[]>([]);
+
   const router = useRouter();
+  const { mutate: markAsRead } = useMarkNotificationAsRead();
+  const { mutate: markAllAsRead } = useMarkAllNotificationsAsRead();
+  const { mutate: deleteNotification } = useDeleteNotification();
 
   const notifications = useMemo(() => {
     const content = (apiResponse as any)?.content;
     if (!content) return [];
 
-    return content.map((notification: any) => ({
-      id: notification.id,
-      type: mapPriorityToType(notification.priority),
-      title: notification.title,
-      message: notification.message,
-      timestamp: formatTimestamp(notification.createdAt),
-      batchId: notification.referenceId,
-      isRead: notification.read,
-      priority: notification.priority,
-      typeIcon: notification.typeIcon,
-      priorityColor: notification.priorityColor,
-    }));
-  }, [apiResponse]);
+    return content
+      .filter(
+        (notification: any) => !deletedNotifications.includes(notification.id)
+      )
+      .map((notification: any) => ({
+        id: notification.id,
+        type: mapPriorityToType(notification.priority),
+        title: notification.title,
+        message: notification.message,
+        timestamp: formatTimestamp(notification.createdAt),
+        batchId: notification.referenceId,
+        isRead:
+          notification.read || readNotifications.includes(notification.id),
+        priority: notification.priority,
+        typeIcon: notification.typeIcon,
+        priorityColor: notification.priorityColor,
+      }));
+  }, [apiResponse, deletedNotifications, readNotifications]);
 
   const unreadCount = notifications.filter((n: any) => !n.isRead).length;
 
@@ -146,19 +160,113 @@ export function NotificationPanel({
   };
 
   const handleMarkAsRead = () => {
-    // Here you would typically call an API to mark notifications as read
-    // For now, we'll just clear the selection
+    if (selectedNotifications.length === 0) return;
+
+    setReadNotifications((prev) => [...prev, ...selectedNotifications]);
     setSelectedNotifications([]);
-    // TODO: Implement API call to mark selected notifications as read
-    console.log("Mark as read:", selectedNotifications);
+    setIsSelectionMode(false);
+
+    if (selectedNotifications.length === notifications.length) {
+      markAllAsRead(undefined, {
+        onSuccess: () => {
+          console.log("All notifications marked as read successfully");
+        },
+        onError: (error) => {
+          setReadNotifications((prev) =>
+            prev.filter((id) => !selectedNotifications.includes(id))
+          );
+          console.error("Failed to mark all notifications as read:", error);
+        },
+      });
+    } else {
+      markAsRead(selectedNotifications, {
+        onSuccess: () => {
+          console.log("Selected notifications marked as read successfully");
+        },
+        onError: (error) => {
+          setReadNotifications((prev) =>
+            prev.filter((id) => !selectedNotifications.includes(id))
+          );
+          console.error(
+            "Failed to mark selected notifications as read:",
+            error
+          );
+        },
+      });
+    }
   };
 
   const handleDeleteSelected = () => {
-    // Here you would typically call an API to delete notifications
-    // For now, we'll just clear the selection
+    if (selectedNotifications.length === 0) return;
+
+    setDeletedNotifications((prev) => [...prev, ...selectedNotifications]);
     setSelectedNotifications([]);
-    // TODO: Implement API call to delete selected notifications
-    console.log("Delete selected:", selectedNotifications);
+    setIsSelectionMode(false);
+
+    const failedDeletions: string[] = [];
+
+    selectedNotifications.forEach((notificationId) => {
+      deleteNotification(notificationId, {
+        onSuccess: () => {
+          console.log(`Notification ${notificationId} deleted successfully`);
+        },
+        onError: (error) => {
+          failedDeletions.push(notificationId);
+          console.error(
+            `Failed to delete notification ${notificationId}:`,
+            error
+          );
+        },
+      });
+    });
+
+    if (failedDeletions.length > 0) {
+      setTimeout(() => {
+        setDeletedNotifications((prev) =>
+          prev.filter((id) => !failedDeletions.includes(id))
+        );
+      }, 1000);
+    }
+  };
+
+  const handleSingleDelete = (notificationId: string) => {
+    setDeletedNotifications((prev) => [...prev, notificationId]);
+
+    deleteNotification(notificationId, {
+      onSuccess: () => {
+        console.log(`Notification ${notificationId} deleted successfully`);
+      },
+      onError: (error) => {
+        setDeletedNotifications((prev) =>
+          prev.filter((id) => id !== notificationId)
+        );
+        console.error(
+          `Failed to delete notification ${notificationId}:`,
+          error
+        );
+      },
+    });
+  };
+
+  const handleSingleMarkAsRead = (notificationId: string) => {
+    setReadNotifications((prev) => [...prev, notificationId]);
+
+    markAsRead([notificationId], {
+      onSuccess: () => {
+        console.log(
+          `Notification ${notificationId} marked as read successfully`
+        );
+      },
+      onError: (error) => {
+        setReadNotifications((prev) =>
+          prev.filter((id) => id !== notificationId)
+        );
+        console.error(
+          `Failed to mark notification ${notificationId} as read:`,
+          error
+        );
+      },
+    });
   };
 
   const toggleSelectionMode = () => {
@@ -183,7 +291,6 @@ export function NotificationPanel({
 
   return (
     <div className="relative">
-      {/* Notification Button */}
       <Button
         variant="outline"
         size="icon"
@@ -281,7 +388,7 @@ export function NotificationPanel({
                 notifications.slice(0, 5).map((notification: any) => (
                   <div
                     key={notification.id}
-                    className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
+                    className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors group ${
                       !notification.isRead ? "bg-blue-50/30" : ""
                     } ${
                       selectedNotifications.includes(notification.id)
@@ -291,6 +398,8 @@ export function NotificationPanel({
                     onClick={() => {
                       if (isSelectionMode) {
                         handleSelectNotification(notification.id);
+                      } else if (!notification.isRead) {
+                        handleSingleMarkAsRead(notification.id);
                       }
                     }}
                   >
@@ -341,6 +450,19 @@ export function NotificationPanel({
                           {notification.timestamp}
                         </p>
                       </div>
+                      {!isSelectionMode && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSingleDelete(notification.id);
+                          }}
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))
