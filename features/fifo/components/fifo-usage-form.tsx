@@ -1,113 +1,108 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useToast } from "@/hooks/use-toast"
-
-const menuFormSchema = z.object({
-  menu: z.string({
-    required_error: "Pilih menu.",
-  }),
-  porsi: z.string().min(1, {
-    message: "Masukkan jumlah porsi.",
-  }),
-})
-
-const manualFormSchema = z.object({
-  bahan: z.string({
-    required_error: "Pilih bahan.",
-  }),
-  batch: z.string({
-    required_error: "Pilih batch.",
-  }),
-  jumlah: z.string().min(1, {
-    message: "Masukkan jumlah yang digunakan.",
-  }),
-  satuan: z.string({
-    required_error: "Pilih satuan.",
-  }),
-})
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { getAllByBatchesPriority, getAllByMenu } from "../services/fifo";
+import { useQuery } from "@tanstack/react-query";
+import { useMenu, useMenuManual } from "../mutations/fifo";
+import { manualFormSchema, menuFormSchema } from "../schemas/fifo";
 
 interface FifoUsageFormProps {
-  type: "menu" | "manual"
+  type: "menu" | "manual";
 }
 
 export function FifoUsageForm({ type }: FifoUsageFormProps) {
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedIngredient, setSelectedIngredient] = useState<string>("");
 
   const menuForm = useForm<z.infer<typeof menuFormSchema>>({
     resolver: zodResolver(menuFormSchema),
     defaultValues: {
-      menu: "",
-      porsi: "",
+      menuId: "",
+      portionCount: "",
     },
-  })
+  });
+
+  const { data = [] } = useQuery<any, any, any>({
+    queryKey: ["fifo", "menu"],
+    queryFn: getAllByMenu,
+    placeholderData: (previousData: any) => previousData,
+  });
+
+  const { data: BatchesPriority = [] } = useQuery<any, any, any>({
+    queryKey: ["fifo", "priority-batches"],
+    queryFn: getAllByBatchesPriority,
+    placeholderData: (previousData: any) => previousData,
+  });
+
+  const { mutate: menu, isPending: isPendingMenu } = useMenu();
+  const { mutate: menuManual, isPending: isPendingMenuManual } =
+    useMenuManual();
 
   const manualForm = useForm<z.infer<typeof manualFormSchema>>({
     resolver: zodResolver(manualFormSchema),
     defaultValues: {
-      bahan: "",
-      batch: "",
-      jumlah: "",
-      satuan: "",
+      ingredientName: "",
+      batchCode: "",
+      usedWeight: "",
+      satuan: "kg",
     },
-  })
+  });
 
   function onMenuSubmit(values: z.infer<typeof menuFormSchema>) {
-    setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Menu berhasil digunakan",
-        description: `${values.porsi} porsi ${values.menu} telah dicatat`,
-      })
-      menuForm.reset()
-    }, 1000)
+    menu(values);
   }
 
   function onManualSubmit(values: z.infer<typeof manualFormSchema>) {
-    setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Bahan berhasil digunakan",
-        description: `${values.jumlah} ${values.satuan} ${values.bahan} dari batch ${values.batch} telah dicatat`,
-      })
-      manualForm.reset()
-    }, 1000)
+    menuManual(values);
   }
 
   if (type === "menu") {
     return (
       <Form {...menuForm}>
-        <form onSubmit={menuForm.handleSubmit(onMenuSubmit)} className="space-y-4">
+        <form
+          onSubmit={menuForm.handleSubmit(onMenuSubmit)}
+          className="space-y-4"
+        >
           <FormField
             control={menuForm.control}
-            name="menu"
+            name="menuId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Menu</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih menu" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="nasi_ayam_sayur">Nasi Ayam Sayur</SelectItem>
-                    <SelectItem value="sup_ayam">Sup Ayam</SelectItem>
-                    <SelectItem value="capcay">Capcay</SelectItem>
-                    <SelectItem value="telur_balado">Telur Balado</SelectItem>
-                    <SelectItem value="tumis_kangkung">Tumis Kangkung</SelectItem>
+                    {data.map((menu: any) => (
+                      <SelectItem key={menu.id} value={menu.id}>
+                        {menu.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -117,7 +112,7 @@ export function FifoUsageForm({ type }: FifoUsageFormProps) {
 
           <FormField
             control={menuForm.control}
-            name="porsi"
+            name="portionCount"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Jumlah Porsi</FormLabel>
@@ -130,36 +125,50 @@ export function FifoUsageForm({ type }: FifoUsageFormProps) {
           />
 
           <div className="pt-2">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Memproses..." : "Gunakan Menu"}
+            <Button type="submit" className="w-full" disabled={isPendingMenu}>
+              {isPendingMenu ? "Memproses..." : "Gunakan Menu"}
             </Button>
           </div>
         </form>
       </Form>
-    )
+    );
   }
 
   return (
     <Form {...manualForm}>
-      <form onSubmit={manualForm.handleSubmit(onManualSubmit)} className="space-y-4">
+      <form
+        onSubmit={manualForm.handleSubmit(onManualSubmit)}
+        className="space-y-4"
+      >
         <FormField
           control={manualForm.control}
-          name="bahan"
+          name="ingredientName"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Bahan</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  setSelectedIngredient(value); 
+                  manualForm.setValue("batchCode", ""); 
+                }}
+                value={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih bahan" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="bayam">Bayam</SelectItem>
-                  <SelectItem value="tomat">Tomat</SelectItem>
-                  <SelectItem value="ayam">Ayam</SelectItem>
-                  <SelectItem value="telur">Telur</SelectItem>
-                  <SelectItem value="wortel">Wortel</SelectItem>
+                  {Array.from(
+                    new Set(
+                      BatchesPriority.map((item: any) => item.ingredientName)
+                    )
+                  ).map((ingredientName: any) => (
+                    <SelectItem key={ingredientName} value={ingredientName}>
+                      {ingredientName}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -169,22 +178,28 @@ export function FifoUsageForm({ type }: FifoUsageFormProps) {
 
         <FormField
           control={manualForm.control}
-          name="batch"
+          name="batchCode"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Batch</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                disabled={!selectedIngredient}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih batch" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="BAYAM-20250521-K1-A">BAYAM-20250521-K1-A</SelectItem>
-                  <SelectItem value="TOMAT-20250520-K1-B">TOMAT-20250520-K1-B</SelectItem>
-                  <SelectItem value="AYAM-20250521-F1-A">AYAM-20250521-F1-A</SelectItem>
-                  <SelectItem value="TELUR-20250520-K2-A">TELUR-20250520-K2-A</SelectItem>
-                  <SelectItem value="WORTEL-20250522-K1-A">WORTEL-20250522-K1-A</SelectItem>
+                  {BatchesPriority.filter(
+                    (batch: any) => batch.ingredientName === selectedIngredient
+                  ).map((batch: any) => (
+                    <SelectItem key={batch.id} value={batch.batchCode}>
+                      {batch.batchCode}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -195,7 +210,7 @@ export function FifoUsageForm({ type }: FifoUsageFormProps) {
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={manualForm.control}
-            name="jumlah"
+            name="usedWeight"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Jumlah</FormLabel>
@@ -213,7 +228,10 @@ export function FifoUsageForm({ type }: FifoUsageFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Satuan</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih satuan" />
@@ -233,11 +251,15 @@ export function FifoUsageForm({ type }: FifoUsageFormProps) {
         </div>
 
         <div className="pt-2">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Memproses..." : "Gunakan Bahan"}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isPendingMenuManual}
+          >
+            {isPendingMenuManual ? "Memproses..." : "Gunakan Bahan"}
           </Button>
         </div>
       </form>
     </Form>
-  )
+  );
 }

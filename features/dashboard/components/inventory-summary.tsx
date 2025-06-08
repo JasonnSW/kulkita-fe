@@ -3,7 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
@@ -11,29 +18,47 @@ import {
 } from "@/components/ui/chart";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardSummary } from "../services/dashboard";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const inventoryData = [
-  { category: "Sayur", count: 18, fill: "hsl(var(--chart-1))" },
-  { category: "Buah", count: 12, fill: "hsl(var(--chart-2))" },
-  { category: "Protein", count: 9, fill: "hsl(var(--chart-3))" },
-  { category: "Bahan Pokok", count: 6, fill: "hsl(var(--chart-4))" },
-  { category: "Snack", count: 7, fill: "hsl(27, 87%, 67%)" },
-  { category: "Minuman", count: 10, fill: "hsl(200, 85%, 45%)" },
-  { category: "Bumbu", count: 6, fill: "hsl(100, 70%, 50%)" },
-  { category: "Frozen Food", count: 12, fill: "hsl(45, 90%, 60%)" },
-];
+type Status = "GREEN" | "YELLOW" | "RED";
 
-const statusData = [
-  { status: "Aman", count: 32, fill: "#4CAF50" },
-  { status: "Waspada", count: 10, fill: "#FFC107" },
-  { status: "Kritis", count: 3, fill: "#F44336" },
-];
+const colorMap: Record<Status, string> = {
+  GREEN: "#4CAF50",
+  YELLOW: "#FFC107",
+  RED: "#EF4444",
+};
 
 export function InventorySummary() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<any, any, any>({
     queryKey: ["dashboard", "summary"],
     queryFn: getDashboardSummary,
   });
+
+  const top8Ingredients =
+    data?.ingredientSummaries
+      ?.slice()
+      .sort((a: any, b: any) => b.batchCount - a.batchCount)
+      .slice(0, 8)
+      .map((item: any, index: any) => ({
+        ...item,
+        fill: `hsl(${(index * 45) % 360}, 70%, 50%)`,
+      })) || [];
+
+  const freshnessData = data?.freshnessStatusSummaries
+    ?.slice()
+    .sort((a: { status: Status }, b: { status: Status }) => {
+      const order: Record<Status, number> = {
+        GREEN: 0,
+        YELLOW: 1,
+        RED: 2,
+      };
+      return order[a.status] - order[b.status];
+    })
+    .map((entry: { status: Status; [key: string]: any }) => {
+      const fillColor = colorMap[entry.status];
+      return { ...entry, fillColor };
+    });
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Card className="col-span-2">
@@ -42,27 +67,31 @@ export function InventorySummary() {
         </CardHeader>
         <CardContent>
           <div className="max-h-dvh">
-            <ChartContainer
-              config={{
-                count: {
-                  label: "Jumlah Batch",
-                  color: "hsl(var(--chart-1))",
-                },
-              }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={inventoryData}>
-                  <XAxis dataKey="category" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="count"
-                    fill="var(--color-count)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+            {isLoading ? (
+              <Skeleton className="w-full h-[300px] rounded-md" />
+            ) : (
+              <ChartContainer
+                config={{
+                  batchCount: {
+                    label: "Jumlah Batch",
+                    color: "#4CAF50",
+                  },
+                }}
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={top8Ingredients}>
+                    <XAxis dataKey="ingredientName" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar
+                      dataKey="batchCount"
+                      fill="var(--color-batchCount)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -82,15 +111,24 @@ export function InventorySummary() {
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={statusData} layout="vertical">
+                <BarChart data={freshnessData} layout="vertical">
                   <XAxis type="number" />
-                  <YAxis dataKey="status" type="category" />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="count"
-                    fill="var(--color-count)"
-                    radius={[0, 4, 4, 0]}
+                  <YAxis
+                    dataKey="status"
+                    type="category"
+                    tickFormatter={(value: string) => {
+                      if (value === "RED") return "Kritis";
+                      if (value === "YELLOW") return "Waspada";
+                      if (value === "GREEN") return "Aman";
+                      return value;
+                    }}
                   />
+                  <ChartTooltip content={<CustomTooltipContent />} />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                    {freshnessData.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={entry.fillColor} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -103,36 +141,28 @@ export function InventorySummary() {
           <CardTitle>Lokasi Penyimpanan</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Kulkas 1</div>
-                <div className="text-xs text-muted-foreground">18 batch</div>
-              </div>
-              <Badge className="bg-primary">Aktif</Badge>
+          {data?.storageLocationSummaries && (
+            <div className="max-h-64 overflow-y-auto space-y-4 pr-2">
+              {data.storageLocationSummaries.map(
+                (storage: any, index: number) => (
+                  <div
+                    key={`${storage.location}-${index}`}
+                    className="flex justify-between items-center"
+                  >
+                    <div className="space-y-1">
+                      <div className="text-sm font-medium">
+                        {storage.location}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {storage.batchCount} batch
+                      </div>
+                    </div>
+                    <Badge className="bg-primary">Aktif</Badge>
+                  </div>
+                )
+              )}
             </div>
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Kulkas 2</div>
-                <div className="text-xs text-muted-foreground">12 batch</div>
-              </div>
-              <Badge className="bg-primary">Aktif</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Freezer 1</div>
-                <div className="text-xs text-muted-foreground">9 batch</div>
-              </div>
-              <Badge className="bg-primary">Aktif</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Gudang Kering</div>
-                <div className="text-xs text-muted-foreground">6 batch</div>
-              </div>
-              <Badge className="bg-primary">Aktif</Badge>
-            </div>
-          </div>
+          )}
           <Button variant="outline" className="w-full mt-4">
             Kelola Lokasi
           </Button>
@@ -141,3 +171,34 @@ export function InventorySummary() {
     </div>
   );
 }
+
+export const CustomTooltipContent = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const statusLabel =
+      label === "RED"
+        ? "Kritis"
+        : label === "YELLOW"
+        ? "Waspada"
+        : label === "GREEN"
+        ? "Aman"
+        : label;
+
+    const statusColor = colorMap[label as Status];
+
+    return (
+      <div className="bg-background border rounded-lg shadow-lg p-3">
+        <p className="text-xs font-medium">{statusLabel}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <div
+            className="w-3 h-3 rounded border"
+            style={{ backgroundColor: statusColor, borderColor: statusColor }}
+          />
+          <p className="text-xs text-muted-foreground">
+            Jumlah Batch: {payload[0].value}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};

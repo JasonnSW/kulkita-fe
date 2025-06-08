@@ -1,63 +1,121 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { AlertCircle, ArrowRight, CheckCircle2, Clock, ThermometerIcon } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { SpoilageAlertTable } from "@/features/predictions/components/spoilage-alert-table"
-
-const alertSummary = [
-  { status: "Kritis", count: 3, icon: AlertCircle, color: "text-red-500" },
-  { status: "Waspada", count: 10, icon: Clock, color: "text-yellow-500" },
-  { status: "Aman", count: 32, icon: CheckCircle2, color: "text-green-500" },
-]
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  ThermometerIcon,
+} from "lucide-react";
+import { SpoilageAlertTable } from "@/features/predictions/components/spoilage-alert-table";
+import { useQuery } from "@tanstack/react-query";
+import { getFreshnessStatusSummary } from "../services/predictions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { colorMap, descriptionMap, iconMap } from "../utils/predictions";
 
 export function SpoilageAlertDashboard() {
-  const { toast } = useToast()
-  const [timeframe, setTimeframe] = useState("today")
+  const [timeframe, setTimeframe] = useState("today");
 
-  const handleAction = (action: string) => {
-    toast({
-      title: `Tindakan ${action} berhasil`,
-      description: "Status bahan telah diperbarui",
-    })
-  }
+  const { data: freshness, isLoading: isLoadingFreshness } = useQuery<
+    any,
+    any,
+    any
+  >({
+    queryKey: ["prediction", "freshness-status-summary"],
+    queryFn: getFreshnessStatusSummary,
+    placeholderData: (previousData: any) => previousData,
+  });
+
+  const countByStatus = (status: string) =>
+    freshness?.find((item: any) => item.statusName === status)?.batchCount || 0;
+
+  const criticalCount = countByStatus("Krisis");
+  const warningCount = countByStatus("Waspada");
+  const totalCount =
+    freshness?.reduce(
+      (acc: number, curr: any) => acc + (curr.batchCount || 0),
+      0
+    ) || 0;
 
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
-        {alertSummary.map((alert, index) => (
-          <Card key={index} className={alert.status === "Kritis" ? "border-red-200" : ""}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Status {alert.status}</CardTitle>
-              <alert.icon className={`h-4 w-4 ${alert.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{alert.count} Batch</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {alert.status === "Kritis"
-                  ? "Perlu tindakan segera"
-                  : alert.status === "Waspada"
-                    ? "Pantau dalam 48 jam"
-                    : "Tidak perlu tindakan"}
-              </p>
-              {alert.status !== "Aman" && (
-                <Button
-                  variant="link"
-                  className={`px-0 ${alert.status === "Kritis" ? "text-red-500" : "text-yellow-500"}`}
-                  onClick={() => handleAction(alert.status)}
-                >
-                  Lihat Detail
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+        {isLoadingFreshness
+          ? Array.from({ length: 3 }).map((_, index) => (
+              <Card key={index} className="border border-gray-200">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-4 rounded-full" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-6 w-28 mb-2" />
+                  <Skeleton className="h-3 w-full mb-3" />
+                  <Skeleton className="h-4 w-20" />
+                </CardContent>
+              </Card>
+            ))
+          : freshness?.map((alert: any, index: number) => {
+              const Icon = iconMap[alert.freshnessStatus] || ThermometerIcon;
+              const color = colorMap[alert.freshnessStatus] || "text-gray-500";
+              const status = alert.statusName;
+              const batchCount = alert.batchCount;
+              const description = descriptionMap[status] || "";
+
+              const borderColor =
+                alert.freshnessStatus === "RED"
+                  ? "border-red-200"
+                  : alert.freshnessStatus === "YELLOW"
+                  ? "border-yellow-200"
+                  : "border-green-200";
+
+              const buttonColor =
+                status === "Krisis"
+                  ? "text-red-500"
+                  : status === "Waspada"
+                  ? "text-yellow-500"
+                  : "text-green-500";
+
+              return (
+                <Card key={index} className={`border ${borderColor}`}>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Status {status}
+                    </CardTitle>
+                    <Icon className={`h-4 w-4 ${color}`} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{batchCount} Batch</div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {description}
+                    </p>
+                    {status !== "Aman" && (
+                      <Button variant="link" className={`px-0 ${buttonColor}`}>
+                        Lihat Detail
+                        <ArrowRight className="ml-1 h-4 w-4" />
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
       </div>
 
       <Card>
@@ -65,7 +123,10 @@ export function SpoilageAlertDashboard() {
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
               <CardTitle>Peringatan Dini Pembusukan</CardTitle>
-              <CardDescription>Prediksi bahan yang berisiko busuk berdasarkan model machine learning</CardDescription>
+              <CardDescription>
+                Prediksi bahan yang berisiko busuk berdasarkan model machine
+                learning
+              </CardDescription>
             </div>
             <Select value={timeframe} onValueChange={setTimeframe}>
               <SelectTrigger className="w-[180px]">
@@ -82,9 +143,13 @@ export function SpoilageAlertDashboard() {
         <CardContent>
           <Tabs defaultValue="critical">
             <TabsList className="grid w-full grid-cols-3 mb-4">
-              <TabsTrigger value="critical">Kritis (3)</TabsTrigger>
-              <TabsTrigger value="warning">Waspada (10)</TabsTrigger>
-              <TabsTrigger value="all">Semua Batch (45)</TabsTrigger>
+              <TabsTrigger value="critical">
+                Kritis ({criticalCount})
+              </TabsTrigger>
+              <TabsTrigger value="warning">
+                Waspada ({warningCount})
+              </TabsTrigger>
+              <TabsTrigger value="all">Semua Batch ({totalCount})</TabsTrigger>
             </TabsList>
             <TabsContent value="critical">
               <SpoilageAlertTable status="critical" />
@@ -103,7 +168,9 @@ export function SpoilageAlertDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Faktor Risiko Pembusukan</CardTitle>
-            <CardDescription>Faktor yang mempengaruhi prediksi pembusukan</CardDescription>
+            <CardDescription>
+              Faktor yang mempengaruhi prediksi pembusukan
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -111,13 +178,16 @@ export function SpoilageAlertDashboard() {
                 <div className="flex justify-between">
                   <div className="flex items-center">
                     <ThermometerIcon className="h-4 w-4 mr-2 text-red-500" />
-                    <span className="text-sm font-medium">Suhu Penyimpanan</span>
+                    <span className="text-sm font-medium">
+                      Suhu Penyimpanan
+                    </span>
                   </div>
                   <span className="text-sm font-medium">85%</span>
                 </div>
                 <Progress value={85} className="h-2" />
                 <p className="text-xs text-muted-foreground">
-                  Kulkas 1 menunjukkan fluktuasi suhu yang dapat mempercepat pembusukan sayuran hijau
+                  Kulkas 1 menunjukkan fluktuasi suhu yang dapat mempercepat
+                  pembusukan sayuran hijau
                 </p>
               </div>
 
@@ -131,7 +201,8 @@ export function SpoilageAlertDashboard() {
                 </div>
                 <Progress value={65} className="h-2" />
                 <p className="text-xs text-muted-foreground">
-                  Beberapa batch sayuran sudah mencapai 70% masa simpan maksimalnya
+                  Beberapa batch sayuran sudah mencapai 70% masa simpan
+                  maksimalnya
                 </p>
               </div>
 
@@ -145,7 +216,8 @@ export function SpoilageAlertDashboard() {
                 </div>
                 <Progress value={40} className="h-2" />
                 <p className="text-xs text-muted-foreground">
-                  Beberapa batch tomat menunjukkan tanda-tanda kerusakan saat penerimaan
+                  Beberapa batch tomat menunjukkan tanda-tanda kerusakan saat
+                  penerimaan
                 </p>
               </div>
             </div>
@@ -155,23 +227,27 @@ export function SpoilageAlertDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Rekomendasi Tindakan</CardTitle>
-            <CardDescription>Tindakan yang disarankan untuk mencegah pembusukan</CardDescription>
+            <CardDescription>
+              Tindakan yang disarankan untuk mencegah pembusukan
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-start gap-4 p-3 bg-red-50 rounded-lg">
                 <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-semibold">Gunakan Batch Bayam Segera</h4>
+                  <h4 className="text-sm font-semibold">
+                    Gunakan Batch Bayam Segera
+                  </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Batch BAYAM-20250521-K1-A diprediksi akan busuk dalam 24 jam. Prioritaskan penggunaan dalam menu
-                    hari ini.
+                    Batch BAYAM-20250521-K1-A diprediksi akan busuk dalam 24
+                    jam. Prioritaskan penggunaan dalam menu hari ini.
                   </p>
                   <div className="flex gap-2 mt-2">
-                    <Button size="sm" variant="destructive" onClick={() => handleAction("Gunakan Segera")}>
+                    <Button size="sm" variant="destructive">
                       Gunakan Segera
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleAction("Redistribusi")}>
+                    <Button size="sm" variant="outline">
                       Redistribusi
                     </Button>
                   </div>
@@ -181,12 +257,14 @@ export function SpoilageAlertDashboard() {
               <div className="flex items-start gap-4 p-3 bg-yellow-50 rounded-lg">
                 <Clock className="h-5 w-5 text-yellow-500 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-semibold">Periksa Suhu Kulkas 1</h4>
+                  <h4 className="text-sm font-semibold">
+                    Periksa Suhu Kulkas 1
+                  </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Suhu Kulkas 1 fluktuatif dalam 12 jam terakhir. Periksa pengaturan suhu untuk mencegah pembusukan
-                    dini.
+                    Suhu Kulkas 1 fluktuatif dalam 12 jam terakhir. Periksa
+                    pengaturan suhu untuk mencegah pembusukan dini.
                   </p>
-                  <Button size="sm" variant="outline" className="mt-2" onClick={() => handleAction("Periksa Suhu")}>
+                  <Button size="sm" variant="outline" className="mt-2">
                     Tandai Sudah Diperiksa
                   </Button>
                 </div>
@@ -195,11 +273,14 @@ export function SpoilageAlertDashboard() {
               <div className="flex items-start gap-4 p-3 bg-green-50 rounded-lg">
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-semibold">Atur Ulang Penyimpanan Tomat</h4>
+                  <h4 className="text-sm font-semibold">
+                    Atur Ulang Penyimpanan Tomat
+                  </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Pindahkan batch tomat ke area dengan sirkulasi udara lebih baik untuk memperpanjang masa simpan.
+                    Pindahkan batch tomat ke area dengan sirkulasi udara lebih
+                    baik untuk memperpanjang masa simpan.
                   </p>
-                  <Button size="sm" variant="outline" className="mt-2" onClick={() => handleAction("Atur Ulang")}>
+                  <Button size="sm" variant="outline" className="mt-2">
                     Tandai Selesai
                   </Button>
                 </div>
@@ -209,5 +290,5 @@ export function SpoilageAlertDashboard() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
