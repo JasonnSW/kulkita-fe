@@ -7,11 +7,40 @@ import { Activity, Clipboard, DollarSign } from "lucide-react";
 import React from "react";
 import { getDashboardSummary } from "../services/dashboard";
 
+type Status = "GREEN" | "YELLOW" | "RED";
+
+const colorMap: Record<Status, string> = {
+  GREEN: "#4CAF50",
+  YELLOW: "#FFC107",
+  RED: "#EF4444",
+};
+
+const labelMap: Record<Status, string> = {
+  GREEN: "Aman",
+  YELLOW: "Waspada",
+  RED: "Kritis",
+};
+
 export default function SummaryCard() {
   const { data, isLoading } = useQuery<any, any, any>({
     queryKey: ["dashboard", "summary"],
     queryFn: getDashboardSummary,
   });
+
+  const freshnessData = data?.freshnessStatusSummaries
+    ?.slice()
+    .sort((a: { status: Status }, b: { status: Status }) => {
+      const order: Record<Status, number> = {
+        GREEN: 0,
+        YELLOW: 1,
+        RED: 2,
+      };
+      return order[a.status] - order[b.status];
+    })
+    .map((entry: { status: Status; [key: string]: any }) => {
+      const fillColor = colorMap[entry.status];
+      return { ...entry, fillColor };
+    });
 
   console.log("SummaryCard data:", data);
 
@@ -29,7 +58,7 @@ export default function SummaryCard() {
           <div className="text-2xl font-bold">
             {data?.totalActiveBatches ?? "-"}
           </div>
-          <p className="text-xs text-muted-foreground">Nilai: Rp 24,560,000</p>
+          {/* <p className="text-xs text-muted-foreground">Nilai: Rp 24,560,000</p> */}
         </CardContent>
       </Card>
       <Card>
@@ -40,15 +69,23 @@ export default function SummaryCard() {
         <CardContent>
           <div className="text-2xl font-bold">{data?.totalActiveWeight}</div>
           <div className="flex gap-2 mt-1">
-            <Badge variant="outline" className="bg-green-50">
-              32 Aman
-            </Badge>
-            <Badge variant="outline" className="bg-yellow-50">
-              10 Waspada
-            </Badge>
-            <Badge variant="outline" className="bg-red-50">
-              3 Kritis
-            </Badge>
+            {freshnessData?.map((entry: { status: Status; count: number }) => {
+              const baseColor =
+                entry.status === "GREEN"
+                  ? "bg-green-50 text-green-700 border-green-200"
+                  : entry.status === "YELLOW"
+                  ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                  : "bg-red-50 text-red-700 border-red-200";
+              return (
+                <Badge
+                  key={entry.status}
+                  variant="outline"
+                  className={baseColor}
+                >
+                  {entry.count} {labelMap[entry.status]}
+                </Badge>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -61,9 +98,9 @@ export default function SummaryCard() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">24.5 kg</div>
-          <p className="text-xs text-muted-foreground">
+          {/* <p className="text-xs text-muted-foreground">
             Estimasi: Rp 1,250,000
-          </p>
+          </p> */}
         </CardContent>
       </Card>
       <Card>
