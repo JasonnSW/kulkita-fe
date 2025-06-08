@@ -1,4 +1,4 @@
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   deleteNotification,
   markAllNotificationAsRead,
@@ -7,7 +7,7 @@ import {
 import { toast } from "sonner";
 
 export function useMarkNotificationAsRead() {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["notification", "mark-as-read"],
     mutationFn: (notificationIds: string[]) =>
@@ -24,7 +24,7 @@ export function useMarkNotificationAsRead() {
 }
 
 export function useMarkAllNotificationsAsRead() {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["notification", "mark-all-as-read"],
     mutationFn: markAllNotificationAsRead,
@@ -40,7 +40,7 @@ export function useMarkAllNotificationsAsRead() {
 }
 
 export function useDeleteNotification() {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["notification", "delete"],
     mutationFn: async (notificationId: string) => {

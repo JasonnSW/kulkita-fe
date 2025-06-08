@@ -41,9 +41,7 @@ export default function AllNotifications() {
   const [activeTab, setActiveTab] = useState("all");
   const [readNotifications, setReadNotifications] = useState<string[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [deletedNotifications, setDeletedNotifications] = useState<string[]>(
-    []
-  );
+
   const { data: apiResponse } = useGetNotifications() as {
     data: NotificationApiResponse;
   };
