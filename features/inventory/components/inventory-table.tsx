@@ -23,7 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllInventoryItems } from "../services/inventory";
 
 interface InventoryTableProps {
-  category?: "all" | "sayur" | "buah" | "protein hewani" | "pokok";
+  category?: "all" | "SAYURAN" | "BUAH" | "PROTEIN" | "BAHAN_POKOK";
 }
 
 export function InventoryTable({ category = "all" }: InventoryTableProps) {
@@ -41,10 +41,10 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
   const filteredData = items.filter((item: any) => {
     const matchesCategory =
       category === "all" ||
-      (category === "sayur" && item.category === "Sayuran") ||
-      (category === "buah" && item.category === "Buah") ||
-      (category === "protein hewani" && item.category === "Protein Hewani") ||
-      (category === "pokok" && item.category === "Bahan Pokok");
+      (category === "SAYURAN" && item.category === "SAYURAN") ||
+      (category === "BUAH" && item.category === "BUAH") ||
+      (category === "PROTEIN" && item.category === "PROTEIN") ||
+      (category === "BAHAN_POKOK" && item.category === "BAHAN_POKOK");
 
     const matchesSearch =
       item.batchCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
