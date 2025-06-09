@@ -1,27 +1,47 @@
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createMenu, createMenuManual } from "../services/fifo";
 import { toast } from "sonner";
 
 export function useMenu() {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createMenu,
     onSuccess: (data: any) => {
+      queryClient.setQueryData(["fifo", "priority-batches"], (old: any) => {
+        if (!old || !Array.isArray(old)) return [data];
+        if (old.some((item) => item.id === data.id)) return old;
+        return [data, ...old];
+      });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
-      toast.success(`Menu berhasil dibuat: ${data.description}`);
+      queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
+      queryClient.invalidateQueries({ queryKey: ["fifo", "priority-batches"] });
+      queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
+      queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
+      toast.success(`${data.message}`);
     },
     onError: (error) => {
-      toast.error(`Gagal menggunakan bahan: ${error.message}`);
+      toast.error(` ${error.message}`);
     },
   });
 }
 
 export function useMenuManual() {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createMenuManual,
     onSuccess: (data: any) => {
+      queryClient.setQueryData(["fifo", "priority-batches"], (old: any) => {
+        if (!old || !Array.isArray(old)) return [data];
+        if (old.some((item) => item.id === data.id)) return old;
+        return [data, ...old];
+      });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
+      queryClient.invalidateQueries({ queryKey: ["fifo", "priority-batches"] });
+      queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
+      queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
       toast.success(`${data.message}`);
     },
     onError: (error) => {

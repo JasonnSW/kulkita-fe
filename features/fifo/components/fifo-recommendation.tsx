@@ -28,6 +28,10 @@ export function FifoRecommendation() {
     placeholderData: (previousData: any) => previousData,
   });
 
+  function isValidDate(date: any) {
+    return date && !isNaN(new Date(date).getTime());
+  }
+
   return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground mb-4">
@@ -64,13 +68,19 @@ export function FifoRecommendation() {
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((item: any) => {
+              data.map((item: any, index : number) => {
                 const progress = calculateProgress(
                   item.entryDate,
                   item.expiryDate
                 );
                 return (
-                  <TableRow key={item.id}>
+                  <TableRow
+                    key={
+                      item.id ??
+                      item.batchCode ??
+                      `${item.ingredientName}-${index + 1}`
+                    }
+                  >
                     <TableCell className="font-medium">
                       {item.batchCode}
                     </TableCell>
@@ -79,14 +89,19 @@ export function FifoRecommendation() {
                       {item.weight} {item.unit}
                     </TableCell>
                     <TableCell>
-                      {format(new Date(item.entryDate), "dd MMMM yyyy", {
-                        locale: id,
-                      })}
+                      {isValidDate(item.entryDate)
+                        ? format(new Date(item.entryDate), "dd MMMM yyyy", {
+                            locale: id,
+                          })
+                        : "-"}
                     </TableCell>
+
                     <TableCell>
-                      {format(new Date(item.expiryDate), "dd MMMM yyyy", {
-                        locale: id,
-                      })}
+                      {isValidDate(item.expiryDate)
+                        ? format(new Date(item.expiryDate), "dd MMMM yyyy", {
+                            locale: id,
+                          })
+                        : "-"}
                     </TableCell>
                     <TableCell>{item.daysUntilExpiry} hari</TableCell>
                     <TableCell>
