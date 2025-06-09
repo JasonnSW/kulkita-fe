@@ -42,7 +42,7 @@ export default function SummaryCard() {
       return { ...entry, fillColor };
     });
 
-  console.log("SummaryCard data:", data);
+  // console.log("SummaryCard data:", data);
 
   if (isLoading) return <div>Loading...</div>;
   return (

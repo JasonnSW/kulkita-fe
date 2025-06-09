@@ -64,13 +64,13 @@ export function AddBatchForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="bayam">Bayam</SelectItem>
-                    <SelectItem value="tomat">Tomat</SelectItem>
-                    <SelectItem value="wortel">Wortel</SelectItem>
-                    <SelectItem value="ayam">Ayam</SelectItem>
-                    <SelectItem value="telur">Telur</SelectItem>
-                    <SelectItem value="jeruk">Jeruk</SelectItem>
-                    <SelectItem value="beras">Beras</SelectItem>
+                    <SelectItem value="Bayam">Bayam</SelectItem>
+                    <SelectItem value="Tomat">Tomat</SelectItem>
+                    <SelectItem value="Wortel">Wortel</SelectItem>
+                    <SelectItem value="Ayam">Ayam</SelectItem>
+                    <SelectItem value="Telur">Telur</SelectItem>
+                    <SelectItem value="Jeruk">Jeruk</SelectItem>
+                    <SelectItem value="Beras">Beras</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -177,10 +177,10 @@ export function AddBatchForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Kulkas 1">Kulkas 1</SelectItem>
-                    <SelectItem value="Kulkas 2">Kulkas 2</SelectItem>
-                    <SelectItem value="Freezer 1">Freezer 1</SelectItem>
-                    <SelectItem value="Gudang">Gudang Kering</SelectItem>
+                    <SelectItem value="kulkas">Kulkas</SelectItem>
+                    {/* <SelectItem value="kulkas 2">Kulkas 2</SelectItem> */}
+                    <SelectItem value="freezer">Freezer</SelectItem>
+                    <SelectItem value="gudang">Gudang Kering</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
