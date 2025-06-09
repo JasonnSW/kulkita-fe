@@ -13,8 +13,8 @@ export function useLogin() {
       toast.success("Selamat datang kembali di Kulkita");
       router.push("/dashboard");
     },
-    onError: () => {
-      toast.error("Email atau password salah");
+    onError: (error: any) => {
+      toast.error(error.message);
     },
   });
 }
@@ -24,9 +24,9 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: register,
-    onSuccess: () => {
-      toast.success("Akun Anda telah dibuat. Silakan login.");
-      router.push("/login");
+    onSuccess: (data: any) => {
+      toast.success(data.message);
+      router.push("/");
     },
     onError: () => {
       toast.error("Terjadi kesalahan saat membuat akun");

@@ -47,18 +47,19 @@ export default function Home() {
               </TabsContent>
               <TabsContent value="register">
                 <Tabs defaultValue="create-unit">
-                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                  {/* <TabsList className="grid w-full grid-cols-2 mb-4">
                     <TabsTrigger value="create-unit">Buat Unit</TabsTrigger>
                     <TabsTrigger value="join-unit">Gabung Unit</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="create-unit">
+                  </TabsList> */}
+                  <RegisterForm />
+                  {/* <TabsContent value="create-unit">
                     <RegisterForm />
                     <CreateUnitForm />
                   </TabsContent>
                   <TabsContent value="join-unit">
                     <RegisterForm />
                     <JoinUnitForm />
-                  </TabsContent>
+                  </TabsContent> */}
                 </Tabs>
               </TabsContent>
             </Tabs>

@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { registerSchema } from "../schemas/auth";
 import { useRegister } from "../hooks/use-auth";
+import { Button } from "@/components/ui/button";
 
 export function RegisterForm() {
   const { mutate: register, isPending } = useRegister();
@@ -21,11 +22,9 @@ export function RegisterForm() {
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
-      confirmPassword: "",
-      phone: "",
     },
   });
 
@@ -38,7 +37,7 @@ export function RegisterForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="name"
+          name="username"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nama Lengkap</FormLabel>
@@ -62,7 +61,7 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="phone"
           render={({ field }) => (
@@ -74,7 +73,7 @@ export function RegisterForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <FormField
           control={form.control}
           name="password"
@@ -88,7 +87,7 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="confirmPassword"
           render={({ field }) => (
@@ -100,7 +99,10 @@ export function RegisterForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "Memproses..." : "Daftar"}
+        </Button>
       </form>
     </Form>
   );
