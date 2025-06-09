@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { apiClient } from "@/lib/api-client";
 import { cookies } from "next/headers";
@@ -24,6 +24,8 @@ export async function getAllByBatchesPriority() {
 }
 
 export async function getAllByMenu() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value || "";
   const res = await apiClient("/api/menus", "GET");
   // console.log("Fetched inventory items:", res);
   return res;
@@ -44,7 +46,7 @@ export async function createMenu(payload: any) {
   return res;
 }
 
-export async function createMenuManual(payload:any) {
+export async function createMenuManual(payload: any) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value || "";
   // console.log("Token:", token);
@@ -56,5 +58,4 @@ export async function createMenuManual(payload:any) {
   });
   // console.log("Batch created:", res);
   return res;
-  
 }

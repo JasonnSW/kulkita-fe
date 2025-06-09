@@ -88,11 +88,11 @@ export function UsageForm() {
         usageType: item.usageType,
         menuName: item.ingredientName,
         portionCount: item.portionCount,
-        notes: notes, 
+        notes: notes,
       };
 
       console.log("Payload before submit:", JSON.stringify(payload, null, 2));
-      recordUsage(payload); 
+      recordUsage(payload);
     });
 
     setUsageItems([]);
@@ -136,9 +136,10 @@ export function UsageForm() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="MENU_COOKING">Menu Cooking</SelectItem>
-              <SelectItem value="SNACK">Snack</SelectItem>
-              <SelectItem value="PREPARATION">Persiapan</SelectItem>
-              <SelectItem value="OTHER">Lainnya</SelectItem>
+              <SelectItem value="MANUAL_USE">Manual Use</SelectItem>
+              <SelectItem value="WASTE">Waste</SelectItem>
+              <SelectItem value="EXPIRED">Expired</SelectItem>
+              <SelectItem value="REDISTRIBUTED">Redistributed</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -251,10 +252,15 @@ export function UsageForm() {
                           <SelectValue placeholder="Pilih keperluan" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="MENU_COOKING">Sarapan</SelectItem>
-                          <SelectItem value="SNACK">Snack</SelectItem>
-                          <SelectItem value="PREPARATION">Persiapan</SelectItem>
-                          <SelectItem value="OTHER">Lainnya</SelectItem>
+                          <SelectItem value="MENU_COOKING">
+                            Menu Cooking
+                          </SelectItem>
+                          <SelectItem value="MANUAL_USE">Manual Use</SelectItem>
+                          <SelectItem value="WASTE">Waste</SelectItem>
+                          <SelectItem value="EXPIRED">Expired</SelectItem>
+                          <SelectItem value="REDISTRIBUTED">
+                            Redistributed
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
