@@ -31,8 +31,12 @@ export const mapUrgencyToColor = (urgencyLevel: string) => {
 export const calculateProgress = (entryDate: string, expiryDate: string) => {
   const entry = new Date(entryDate).getTime();
   const expiry = new Date(expiryDate).getTime();
-  const now = Date.now();
 
+  if (expiry <= entry) {
+    return 100;
+  }
+
+  const now = Date.now();
   const totalDuration = expiry - entry;
   const elapsed = now - entry;
 
