@@ -7,6 +7,8 @@ export function useMenu() {
   return useMutation({
     mutationFn: createMenu,
     onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
       toast.success(`Menu berhasil dibuat: ${data.description}`);
     },
     onError: (error) => {
@@ -27,5 +29,3 @@ export function useMenuManual() {
     },
   });
 }
-
-

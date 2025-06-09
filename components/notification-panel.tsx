@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AllNotifications } from "./all-notifications";
 import { useRouter } from "next/navigation";
 import { useGetNotifications } from "@/features/notification/queries/notification";
 import {
@@ -483,11 +482,6 @@ export function NotificationPanel({
             </div>
           </CardContent>
         </Card>
-      )}
-      {showAllNotifications && (
-        <div className="fixed inset-0 z-50 bg-white">
-          <AllNotifications onBack={() => setShowAllNotifications(false)} />
-        </div>
       )}
     </div>
   );

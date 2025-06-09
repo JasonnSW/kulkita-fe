@@ -16,6 +16,9 @@ export function useCreateBatch() {
         return [newBatch, ...old];
       });
       console.log("New batch:", newBatch);
+      queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
 
       toast.success("Bahan berhasil ditambahkan ke inventaris.");
     },
