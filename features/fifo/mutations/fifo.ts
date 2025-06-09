@@ -45,7 +45,14 @@ export function useMenuManual() {
       toast.success(`${data.message}`);
     },
     onError: (error) => {
-      const fixedMessage = error.message.replace(/(\d+)[.,]000(?=\s*kg)/, "$1");
+      const fixedMessage = error.message.replace(
+        /(\d+(?:[.,]\d+))(?=\s*kg)/g,
+        (match) => {
+          const clean = match.replace(",", ".");
+          return parseInt(clean, 10).toString();
+        }
+      );
+
       toast.error(fixedMessage);
     },
   });
