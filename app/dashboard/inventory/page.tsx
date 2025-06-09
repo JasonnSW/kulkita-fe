@@ -26,26 +26,26 @@ export default async function InventoryPage() {
       <Tabs defaultValue="all">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="all">Semua Bahan</TabsTrigger>
-          <TabsTrigger value="sayur">Sayuran</TabsTrigger>
-          <TabsTrigger value="buah">Buah</TabsTrigger>
-          <TabsTrigger value="protein hewani">Protein Hewani</TabsTrigger>
-          <TabsTrigger value="pokok">Bahan Pokok</TabsTrigger>
+          <TabsTrigger value="SAYURAN">Sayuran</TabsTrigger>
+          <TabsTrigger value="BUAH">Buah</TabsTrigger>
+          <TabsTrigger value="PROTEIN">Protein</TabsTrigger>
+          <TabsTrigger value="BAHAN_POKOK">Bahan Pokok</TabsTrigger>
         </TabsList>
         <HydrationBoundary state={state}>
           <TabsContent value="all" className="space-y-4">
             <InventoryTable />
           </TabsContent>
-          <TabsContent value="sayur" className="space-y-4">
-            <InventoryTable category="sayur" />
+          <TabsContent value="SAYURAN" className="space-y-4">
+            <InventoryTable category="SAYURAN" />
           </TabsContent>
-          <TabsContent value="buah" className="space-y-4">
-            <InventoryTable category="buah" />
+          <TabsContent value="BUAH" className="space-y-4">
+            <InventoryTable category="BUAH" />
           </TabsContent>
-          <TabsContent value="protein hewani" className="space-y-4">
-            <InventoryTable category="protein hewani" />
+          <TabsContent value="PROTEIN" className="space-y-4">
+            <InventoryTable category="PROTEIN" />
           </TabsContent>
-          <TabsContent value="pokok" className="space-y-4">
-            <InventoryTable category="pokok" />
+          <TabsContent value="BAHAN_POKOK" className="space-y-4">
+            <InventoryTable category="BAHAN_POKOK" />
           </TabsContent>
         </HydrationBoundary>
       </Tabs>
