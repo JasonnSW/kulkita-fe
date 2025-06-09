@@ -10,6 +10,11 @@ export function useRecordUsage() {
   return useMutation({
     mutationFn: recordUsage,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["usage"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "usage"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
       toast.success("Penggunaan bahan berhasil dicatat.");
     },
     onError: (error) => {
