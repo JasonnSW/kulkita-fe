@@ -35,23 +35,28 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
     placeholderData: (previousData: any) => previousData,
   });
 
-  console.log("Inventory data:", data);
+  // console.log("Inventory data:", data);
   const items = Array.isArray(data) ? data : [];
 
-  const filteredData = items.filter((item: any) => {
-    const matchesCategory =
-      category === "all" ||
-      (category === "SAYURAN" && item.category === "SAYURAN") ||
-      (category === "BUAH" && item.category === "BUAH") ||
-      (category === "PROTEIN" && item.category === "PROTEIN") ||
-      (category === "BAHAN_POKOK" && item.category === "BAHAN_POKOK");
+  const filteredData = items
+    .filter((item: any) => {
+      const matchesCategory =
+        category === "all" ||
+        (category === "SAYURAN" && item.category === "SAYURAN") ||
+        (category === "BUAH" && item.category === "BUAH") ||
+        (category === "PROTEIN" && item.category === "PROTEIN") ||
+        (category === "BAHAN_POKOK" && item.category === "BAHAN_POKOK");
 
-    const matchesSearch =
-      item.batchCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.ingredientName.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch =
+        item.batchCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.ingredientName.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesCategory && matchesSearch;
-  });
+      return matchesCategory && matchesSearch;
+    })
+    .sort(
+      (a: any, b: any) =>
+        new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime()
+    );
 
   return (
     <div className="space-y-4">

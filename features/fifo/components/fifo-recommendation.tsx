@@ -68,7 +68,7 @@ export function FifoRecommendation() {
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((item: any, index : number) => {
+              data.map((item: any, index: number) => {
                 const progress = calculateProgress(
                   item.entryDate,
                   item.expiryDate
@@ -103,7 +103,11 @@ export function FifoRecommendation() {
                           })
                         : "-"}
                     </TableCell>
-                    <TableCell>{item.daysUntilExpiry} hari</TableCell>
+                    <TableCell>
+                      {item.daysUntilExpiry < 0
+                        ? "Kadaluarsa"
+                        : `${item.daysUntilExpiry} hari`}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant="outline"

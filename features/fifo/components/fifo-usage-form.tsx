@@ -149,8 +149,8 @@ export function FifoUsageForm({ type }: FifoUsageFormProps) {
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
-                  setSelectedIngredient(value); 
-                  manualForm.setValue("batchCode", ""); 
+                  setSelectedIngredient(value);
+                  manualForm.setValue("batchCode", "");
                 }}
                 value={field.value}
               >
@@ -160,12 +160,19 @@ export function FifoUsageForm({ type }: FifoUsageFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Array.from(
-                    new Set(
-                      BatchesPriority.map((item: any) => item.ingredientName)
-                    )
-                  ).map((ingredientName: any) => (
-                    <SelectItem key={ingredientName} value={ingredientName}>
+                  {(
+                    Array.from(
+                      new Set(
+                        BatchesPriority.map(
+                          (item: any) => item.ingredientName
+                        ).filter(Boolean)
+                      )
+                    ) as string[]
+                  ).map((ingredientName, index) => (
+                    <SelectItem
+                      key={`ingredient-${ingredientName}-${index}`}
+                      value={ingredientName}
+                    >
                       {ingredientName}
                     </SelectItem>
                   ))}

@@ -45,7 +45,8 @@ export function useMenuManual() {
       toast.success(`${data.message}`);
     },
     onError: (error) => {
-      toast.error(`${error.message}`);
+      const fixedMessage = error.message.replace(/(\d+)[.,]000(?=\s*kg)/, "$1");
+      toast.error(fixedMessage);
     },
   });
 }
