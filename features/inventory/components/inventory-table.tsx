@@ -35,7 +35,6 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
     placeholderData: (previousData: any) => previousData,
   });
 
-  // console.log("Inventory data:", data);
   const items = Array.isArray(data) ? data : [];
 
   const filteredData = items

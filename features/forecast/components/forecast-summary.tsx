@@ -1,22 +1,64 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Bar, BarChart, CartesianGrid, Legend } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { ArrowUpIcon, ArrowDownIcon, TrendingUp, Calendar, BarChart3 } from "lucide-react"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+  ArrowUpIcon,
+  ArrowDownIcon,
+  TrendingUp,
+  BarChart3,
+  CalendarIcon,
+} from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { DateRange } from "react-day-picker"
+import { Calendar } from "@/components/ui/calendar";
 
 type ForecastEntry = {
-  day?: string
-  week?: string
-  sayuran: number
-  buah: number
-  protein: number
-  total: number
-}
+  day?: string;
+  week?: string;
+  sayuran: number;
+  buah: number;
+  protein: number;
+  total: number;
+};
 
 // Sample data for weekly forecast
 const weeklyForecastData = [
@@ -27,7 +69,7 @@ const weeklyForecastData = [
   { day: "Jumat", sayuran: 60, buah: 40, protein: 30, total: 130 },
   { day: "Sabtu", sayuran: 35, buah: 20, protein: 15, total: 70 },
   { day: "Minggu", sayuran: 30, buah: 15, protein: 10, total: 55 },
-]
+];
 
 // Sample data for monthly forecast
 const monthlyForecastData = [
@@ -35,16 +77,46 @@ const monthlyForecastData = [
   { week: "Minggu 2", sayuran: 300, buah: 200, protein: 170, total: 670 },
   { week: "Minggu 3", sayuran: 320, buah: 210, protein: 180, total: 710 },
   { week: "Minggu 4", sayuran: 290, buah: 190, protein: 160, total: 640 },
-]
+];
 
 // Sample data for top ingredients
 const topIngredientsData = [
-  { name: "Bayam", forecast: 120, previous: 100, change: 20, fill: "hsl(var(--chart-1))" },
-  { name: "Tomat", forecast: 90, previous: 95, change: -5, fill: "hsl(var(--chart-2))" },
-  { name: "Ayam", forecast: 80, previous: 70, change: 10, fill: "hsl(var(--chart-3))" },
-  { name: "Telur", forecast: 70, previous: 75, change: -5, fill: "hsl(var(--chart-4))" },
-  { name: "Wortel", forecast: 60, previous: 50, change: 10, fill: "hsl(var(--chart-5))" },
-]
+  {
+    name: "Bayam",
+    forecast: 120,
+    previous: 100,
+    change: 20,
+    fill: "hsl(var(--chart-1))",
+  },
+  {
+    name: "Tomat",
+    forecast: 90,
+    previous: 95,
+    change: -5,
+    fill: "hsl(var(--chart-2))",
+  },
+  {
+    name: "Ayam",
+    forecast: 80,
+    previous: 70,
+    change: 10,
+    fill: "hsl(var(--chart-3))",
+  },
+  {
+    name: "Telur",
+    forecast: 70,
+    previous: 75,
+    change: -5,
+    fill: "hsl(var(--chart-4))",
+  },
+  {
+    name: "Wortel",
+    forecast: 60,
+    previous: 50,
+    change: 10,
+    fill: "hsl(var(--chart-5))",
+  },
+];
 
 // Sample data for menu forecast
 const menuForecastData = [
@@ -53,30 +125,37 @@ const menuForecastData = [
   { name: "Capcay", forecast: 300, previous: 280, change: 20 },
   { name: "Telur Balado", forecast: 250, previous: 270, change: -20 },
   { name: "Tumis Kangkung", forecast: 200, previous: 180, change: 20 },
-]
+];
 
 export function ForecastSummary() {
-  const [forecastPeriod, setForecastPeriod] = useState("week")
-  const [forecastData, setForecastData] = useState<ForecastEntry[]>(weeklyForecastData)
-  const [xAxisKey, setXAxisKey] = useState("day")
+  const [forecastPeriod, setForecastPeriod] = useState("week");
+  const [forecastData, setForecastData] =
+    useState<ForecastEntry[]>(weeklyForecastData);
+  const [xAxisKey, setXAxisKey] = useState("day");
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(2025, 4, 23),
+    to: new Date(2025, 4, 29),
+  });
 
   const handlePeriodChange = (value: string) => {
-    setForecastPeriod(value)
+    setForecastPeriod(value);
     if (value === "week") {
-      setForecastData(weeklyForecastData)
-      setXAxisKey("day")
+      setForecastData(weeklyForecastData);
+      setXAxisKey("day");
     } else if (value === "month") {
-      setForecastData(monthlyForecastData)
-      setXAxisKey("week")
+      setForecastData(monthlyForecastData);
+      setXAxisKey("week");
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Kebutuhan Prediksi</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Kebutuhan Prediksi
+            </CardTitle>
             <BarChart3 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -92,7 +171,9 @@ export function ForecastSummary() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Distribusi Kategori</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Distribusi Kategori
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -108,19 +189,48 @@ export function ForecastSummary() {
               </Badge>
             </div>
             <div className="mt-3 text-xs text-muted-foreground">
-              <span className="font-medium">Kategori tumbuh tercepat:</span> Sayuran (+12%)
+              <span className="font-medium">Kategori tumbuh tercepat:</span>{" "}
+              Sayuran (+12%)
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Periode Prediksi</CardTitle>
-            <Calendar className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium">
+              Periode Prediksi
+            </CardTitle>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button>
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="range"
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </CardHeader>
           <CardContent>
-            <div className="text-lg font-medium">23 - 29 Mei 2025</div>
+            <div className="text-lg font-medium">
+              {date?.from && date?.to
+                ? `${format(date.from, "d", { locale: id })} - ${format(
+                    date.to,
+                    "d MMMM yyyy",
+                    {
+                      locale: id,
+                    }
+                  )}`
+                : "Pilih rentang tanggal"}
+            </div>
             <div className="mt-3 text-xs text-muted-foreground">
-              <span className="font-medium">Akurasi prediksi:</span> 92% berdasarkan data historis
+              <span className="font-medium">Akurasi prediksi:</span> 92%
+              berdasarkan data historis
             </div>
             <Button variant="link" className="px-0 text-xs mt-1">
               Lihat detail akurasi
@@ -134,7 +244,9 @@ export function ForecastSummary() {
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
               <CardTitle>Prediksi Kebutuhan Bahan</CardTitle>
-              <CardDescription>Estimasi kebutuhan bahan segar berdasarkan model prediksi</CardDescription>
+              <CardDescription>
+                Estimasi kebutuhan bahan segar berdasarkan model prediksi
+              </CardDescription>
             </div>
             <Select value={forecastPeriod} onValueChange={handlePeriodChange}>
               <SelectTrigger className="w-[180px]">
@@ -183,8 +295,18 @@ export function ForecastSummary() {
                     strokeWidth={2}
                     activeDot={{ r: 8 }}
                   />
-                  <Line type="monotone" dataKey="buah" stroke="var(--color-buah)" strokeWidth={2} />
-                  <Line type="monotone" dataKey="protein" stroke="var(--color-protein)" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="buah"
+                    stroke="var(--color-buah)"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="protein"
+                    stroke="var(--color-protein)"
+                    strokeWidth={2}
+                  />
                   <Line
                     type="monotone"
                     dataKey="total"
@@ -203,7 +325,9 @@ export function ForecastSummary() {
         <Card>
           <CardHeader>
             <CardTitle>Top 5 Bahan Prediksi</CardTitle>
-            <CardDescription>Bahan dengan kebutuhan tertinggi untuk periode mendatang</CardDescription>
+            <CardDescription>
+              Bahan dengan kebutuhan tertinggi untuk periode mendatang
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="max-h-dvh">
@@ -221,7 +345,11 @@ export function ForecastSummary() {
                     <XAxis type="number" />
                     <YAxis dataKey="name" type="category" />
                     <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="forecast" fill="var(--color-forecast)" radius={[0, 4, 4, 0]} />
+                    <Bar
+                      dataKey="forecast"
+                      fill="var(--color-forecast)"
+                      radius={[0, 4, 4, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartContainer>
@@ -232,7 +360,9 @@ export function ForecastSummary() {
         <Card>
           <CardHeader>
             <CardTitle>Prediksi Menu Populer</CardTitle>
-            <CardDescription>Menu dengan prediksi porsi tertinggi</CardDescription>
+            <CardDescription>
+              Menu dengan prediksi porsi tertinggi
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -240,7 +370,9 @@ export function ForecastSummary() {
                 <div key={index} className="flex justify-between items-center">
                   <div className="space-y-1">
                     <div className="text-sm font-medium">{menu.name}</div>
-                    <div className="text-xs text-muted-foreground">Prediksi: {menu.forecast} porsi</div>
+                    <div className="text-xs text-muted-foreground">
+                      Prediksi: {menu.forecast} porsi
+                    </div>
                   </div>
                   <div className="flex items-center">
                     <div
@@ -266,7 +398,9 @@ export function ForecastSummary() {
       <Card>
         <CardHeader>
           <CardTitle>Perbandingan dengan Periode Sebelumnya</CardTitle>
-          <CardDescription>Perubahan kebutuhan bahan dibandingkan periode sebelumnya</CardDescription>
+          <CardDescription>
+            Perubahan kebutuhan bahan dibandingkan periode sebelumnya
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="max-h-dvh">
@@ -289,8 +423,16 @@ export function ForecastSummary() {
                   <YAxis />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Legend />
-                  <Bar dataKey="forecast" fill="var(--color-forecast)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="previous" fill="var(--color-previous)" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="forecast"
+                    fill="var(--color-forecast)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="previous"
+                    fill="var(--color-previous)"
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -298,5 +440,5 @@ export function ForecastSummary() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
