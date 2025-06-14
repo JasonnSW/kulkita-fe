@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -27,6 +27,7 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  Cell,
 } from "recharts";
 import {
   ChartContainer,
@@ -46,32 +47,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { id } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { DateRange } from "react-day-picker"
+import { DateRange } from "react-day-picker";
 import { Calendar } from "@/components/ui/calendar";
+import { useQuery } from "@tanstack/react-query";
+import { getPredictionForecastDashboard } from "../services/forecast";
+import { toast } from "sonner";
+import { usePredictionDate } from "@/features/forecast/stores/forecast";
 
-type ForecastEntry = {
-  day?: string;
-  week?: string;
-  sayuran: number;
-  buah: number;
-  protein: number;
-  total: number;
-};
-
-// Sample data for weekly forecast
-const weeklyForecastData = [
-  { day: "Senin", sayuran: 45, buah: 30, protein: 25, total: 100 },
-  { day: "Selasa", sayuran: 50, buah: 35, protein: 30, total: 115 },
-  { day: "Rabu", sayuran: 40, buah: 25, protein: 20, total: 85 },
-  { day: "Kamis", sayuran: 55, buah: 30, protein: 35, total: 120 },
-  { day: "Jumat", sayuran: 60, buah: 40, protein: 30, total: 130 },
-  { day: "Sabtu", sayuran: 35, buah: 20, protein: 15, total: 70 },
-  { day: "Minggu", sayuran: 30, buah: 15, protein: 10, total: 55 },
-];
-
-// Sample data for monthly forecast
 const monthlyForecastData = [
   { week: "Minggu 1", sayuran: 280, buah: 180, protein: 150, total: 610 },
   { week: "Minggu 2", sayuran: 300, buah: 200, protein: 170, total: 670 },
@@ -79,7 +62,6 @@ const monthlyForecastData = [
   { week: "Minggu 4", sayuran: 290, buah: 190, protein: 160, total: 640 },
 ];
 
-// Sample data for top ingredients
 const topIngredientsData = [
   {
     name: "Bayam",
@@ -118,7 +100,6 @@ const topIngredientsData = [
   },
 ];
 
-// Sample data for menu forecast
 const menuForecastData = [
   { name: "Nasi Ayam Sayur", forecast: 450, previous: 400, change: 50 },
   { name: "Sup Ayam", forecast: 350, previous: 380, change: -30 },
@@ -127,26 +108,104 @@ const menuForecastData = [
   { name: "Tumis Kangkung", forecast: 200, previous: 180, change: 20 },
 ];
 
+const barColors = ["#4CAF50", "#2196F3", "#FACC15", "#9C27B0", "#EF4444"];
+
+const categoryColorMap: Record<string, string> = {
+  "Bahan Pokok": "text-green-700 bg-green-100",
+  Buah: "text-blue-700 bg-blue-100",
+  Protein: "text-yellow-700 bg-yellow-100",
+  Sayuran: "text-red-700 bg-red-100",
+};
+
+interface RawForecastEntry {
+  Tanggal: string;
+  [key: string]: any;
+}
+
 export function ForecastSummary() {
   const [forecastPeriod, setForecastPeriod] = useState("week");
-  const [forecastData, setForecastData] =
-    useState<ForecastEntry[]>(weeklyForecastData);
-  const [xAxisKey, setXAxisKey] = useState("day");
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(2025, 4, 23),
-    to: new Date(2025, 4, 29),
+
+  const { dateRange, setDateRange } = usePredictionDate();
+
+  // const handlePeriodChange = (value: string) => {
+  //   setForecastPeriod(value);
+  //   if (value === "week") {
+  //     setForecastData(weeklyForecastData);
+  //     setXAxisKey("day");
+  //   } else if (value === "month") {
+  //     setForecastData(monthlyForecastData);
+  //     setXAxisKey("week");
+  //   }
+  // };
+
+  const isValidRange = !!dateRange?.from && !!dateRange?.to;
+
+  const { data, isLoading } = useQuery({
+    enabled: isValidRange,
+    queryKey: [
+      "forecast",
+      dateRange?.from || new Date(),
+      dateRange?.to || new Date(),
+    ],
+    queryFn: () => {
+      if (!dateRange?.from || !dateRange?.to) {
+        toast.error("Tanggal tidak valid");
+        throw new Error("Tanggal tidak valid");
+      }
+      return getPredictionForecastDashboard(dateRange.from, dateRange.to);
+    },
   });
 
-  const handlePeriodChange = (value: string) => {
-    setForecastPeriod(value);
-    if (value === "week") {
-      setForecastData(weeklyForecastData);
-      setXAxisKey("day");
-    } else if (value === "month") {
-      setForecastData(monthlyForecastData);
-      setXAxisKey("week");
+  const handleDateSelect = (selectedDate: DateRange | undefined) => {
+    if (selectedDate?.from && selectedDate?.to) {
+      setDateRange({ from: selectedDate.from, to: selectedDate.to });
     }
   };
+
+  const top5PredictedItems =
+    data?.top_5_predicted_items?.map((item: any, index: number) => ({
+      name: item.Nama_Barang,
+      forecast: item.Prediksi_Kebutuhan_Total_kg,
+      color: barColors[index % barColors.length],
+    })) || [];
+
+  const predictionSummary = data?.prediction_summary;
+  function transformForecastRaw(forecastByDate: RawForecastEntry[]) {
+    if (
+      !forecastByDate ||
+      !Array.isArray(forecastByDate) ||
+      forecastByDate.length === 0
+    ) {
+      return [];
+    }
+
+    const formatted = forecastByDate.map(({ Tanggal, ...rest }, index) => {
+      console.log(`🔄 Processing item ${index}:`, { Tanggal, ...rest });
+      return {
+        tanggal: Tanggal,
+        dateObj: new Date(Tanggal),
+        sortIndex: index,
+        ...rest,
+      };
+    });
+
+    const sorted = formatted
+      .sort((a, b) => {
+        return a.dateObj.getTime() - b.dateObj.getTime();
+      })
+      .map((item, index) => ({
+        ...item,
+        displayIndex: index,
+        displayDate: item.dateObj.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "short",
+        }),
+      }));
+
+    return sorted;
+  }
+
+  const forecastDataChart = transformForecastRaw(data?.forecast_by_date || []);
 
   return (
     <div className="space-y-6">
@@ -159,13 +218,16 @@ export function ForecastSummary() {
             <BarChart3 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">675 kg</div>
+            <div className="text-2xl font-bold">
+              {predictionSummary?.total_predicted_kg} kg
+            </div>
             <div className="flex items-center mt-1 text-xs text-muted-foreground">
               <ArrowUpIcon className="h-3 w-3 mr-1 text-green-500" />
               <span>Naik 8% dari periode sebelumnya</span>
             </div>
             <div className="mt-3 text-xs text-muted-foreground">
-              <span className="font-medium">Estimasi biaya:</span> Rp 16,875,000
+              <span className="font-medium">Estimasi biaya:</span> Rp{" "}
+              {predictionSummary?.total_estimated_cost.toLocaleString("id-ID")}
             </div>
           </CardContent>
         </Card>
@@ -176,24 +238,31 @@ export function ForecastSummary() {
             </CardTitle>
             <TrendingUp className="h-4 w-4 text-primary" />
           </CardHeader>
+
           <CardContent>
-            <div className="flex gap-2 mt-1">
-              <Badge variant="outline" className="bg-green-50 text-green-700">
-                Sayuran: 350 kg
-              </Badge>
-              <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                Buah: 200 kg
-              </Badge>
-              <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
-                Protein: 125 kg
-              </Badge>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {predictionSummary?.category_summary.map((category: any) => (
+                <Badge
+                  key={category.Kategori}
+                  variant="outline"
+                  className={cn(
+                    "text-xs px-3 py-1 rounded-full whitespace-nowrap",
+                    categoryColorMap[category.Kategori] ||
+                      "text-gray-700 bg-gray-100"
+                  )}
+                >
+                  {category.Kategori}: {category.Prediksi_Kebutuhan_Total_kg} kg
+                </Badge>
+              ))}
             </div>
+
             <div className="mt-3 text-xs text-muted-foreground">
               <span className="font-medium">Kategori tumbuh tercepat:</span>{" "}
               Sayuran (+12%)
             </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">
@@ -201,40 +270,50 @@ export function ForecastSummary() {
             </CardTitle>
             <Popover>
               <PopoverTrigger asChild>
-                <button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1"
+                  disabled={isLoading}
+                >
                   <CalendarIcon className="h-4 w-4 text-primary" />
-                </button>
+                </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
                 <Calendar
                   mode="range"
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                  initialFocus
+                  defaultMonth={dateRange?.from}
+                  selected={dateRange}
+                  onSelect={handleDateSelect}
+                  numberOfMonths={1}
+                  min={2}
+                  className="rounded-lg border shadow-sm"
                 />
               </PopoverContent>
             </Popover>
           </CardHeader>
           <CardContent>
-            <div className="text-lg font-medium">
-              {date?.from && date?.to
-                ? `${format(date.from, "d", { locale: id })} - ${format(
-                    date.to,
-                    "d MMMM yyyy",
-                    {
-                      locale: id,
-                    }
+            <div className="text-sm font-medium">
+              {dateRange?.from ? (
+                dateRange.to ? (
+                  `${format(dateRange.from, "dd MMM yyyy")} - ${format(
+                    dateRange.to,
+                    "dd MMM yyyy"
                   )}`
-                : "Pilih rentang tanggal"}
+                ) : (
+                  format(dateRange.from, "dd MMM yyyy")
+                )
+              ) : (
+                <span className="text-muted-foreground italic">
+                  Pilih periode prediksi
+                </span>
+              )}
             </div>
-            <div className="mt-3 text-xs text-muted-foreground">
-              <span className="font-medium">Akurasi prediksi:</span> 92%
-              berdasarkan data historis
+            <div className="text-xs text-muted-foreground mt-1">
+              {dateRange?.from && dateRange?.to
+                ? "Akurasi prediksi: 92% berdasarkan data historis"
+                : "Klik ikon kalender untuk memilih periode"}
             </div>
-            <Button variant="link" className="px-0 text-xs mt-1">
-              Lihat detail akurasi
-            </Button>
           </CardContent>
         </Card>
       </div>
@@ -248,7 +327,7 @@ export function ForecastSummary() {
                 Estimasi kebutuhan bahan segar berdasarkan model prediksi
               </CardDescription>
             </div>
-            <Select value={forecastPeriod} onValueChange={handlePeriodChange}>
+            <Select value={forecastPeriod}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Pilih Periode" />
               </SelectTrigger>
@@ -261,62 +340,106 @@ export function ForecastSummary() {
         </CardHeader>
         <CardContent>
           <div className="max-h-dvh">
-            <ChartContainer
-              config={{
-                sayuran: {
-                  label: "Sayuran (kg)",
-                  color: "hsl(var(--chart-1))",
-                },
-                buah: {
-                  label: "Buah (kg)",
-                  color: "hsl(var(--chart-2))",
-                },
-                protein: {
-                  label: "Protein (kg)",
-                  color: "hsl(var(--chart-3))",
-                },
-                total: {
-                  label: "Total (kg)",
-                  color: "hsl(var(--chart-4))",
-                },
-              }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={forecastData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey={xAxisKey} />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="sayuran"
-                    stroke="var(--color-sayuran)"
-                    strokeWidth={2}
-                    activeDot={{ r: 8 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="buah"
-                    stroke="var(--color-buah)"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="protein"
-                    stroke="var(--color-protein)"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="total"
-                    stroke="var(--color-total)"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+            {/* <DebugInfo /> */}
+            {!isLoading && forecastDataChart.length > 0 && (
+              <ChartContainer
+                config={{
+                  sayuran: {
+                    label: "Sayuran (kg)",
+                    color: "hsl(var(--chart-1))",
+                  },
+                  buah: {
+                    label: "Buah (kg)",
+                    color: "hsl(var(--chart-2))",
+                  },
+                  protein: {
+                    label: "Protein (kg)",
+                    color: "hsl(var(--chart-3))",
+                  },
+                  total: {
+                    label: "Total (kg)",
+                    color: "hsl(var(--chart-4))",
+                  },
+                }}
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={forecastDataChart}
+                    layout="horizontal"
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="displayIndex"
+                      type="number"
+                      domain={[0, "dataMax"]}
+                      ticks={forecastDataChart.map((_, index) => index)}
+                      tickFormatter={(value) => {
+                        console.log(
+                          "🏷️ XAxis tick value:",
+                          value,
+                          "data:",
+                          forecastDataChart[value]
+                        );
+                        const item = forecastDataChart[value];
+                        return item ? item.displayDate : "";
+                      }}
+                    />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+
+                    <Line
+                      type="monotone"
+                      dataKey="Bayam (Sayuran)"
+                      stroke="#4ade80"
+                      strokeWidth={2}
+                      activeDot={{ r: 8 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Tomat (Sayuran)"
+                      stroke="#22c55e"
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Wortel (Sayuran)"
+                      stroke="#16a34a"
+                      strokeWidth={2}
+                    />
+
+                    <Line
+                      type="monotone"
+                      dataKey="Jeruk (Buah)"
+                      stroke="#f97316"
+                      strokeWidth={2}
+                    />
+
+                    <Line
+                      type="monotone"
+                      dataKey="Ayam (Protein)"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Telur (Protein)"
+                      stroke="#2563eb"
+                      strokeWidth={2}
+                    />
+
+                    <Line
+                      type="monotone"
+                      dataKey="Beras (Bahan Pokok)"
+                      stroke="#a855f7"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -340,16 +463,21 @@ export function ForecastSummary() {
                 }}
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={topIngredientsData} layout="vertical">
+                  <BarChart data={top5PredictedItems} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" />
                     <YAxis dataKey="name" type="category" />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar
-                      dataKey="forecast"
-                      fill="var(--color-forecast)"
-                      radius={[0, 4, 4, 0]}
-                    />
+                    <ChartTooltip content={<CustomTooltipContent />} />
+                    <Bar dataKey="forecast" radius={[0, 4, 4, 0]}>
+                      {top5PredictedItems.map(
+                        (entry: number, index: number) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={barColors[index % barColors.length]}
+                          />
+                        )
+                      )}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </ChartContainer>
@@ -441,4 +569,33 @@ export function ForecastSummary() {
       </Card>
     </div>
   );
+}
+
+export const CustomTooltipContent = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-background border rounded-lg shadow-lg p-3">
+        <p className="text-xs font-medium">{data.name}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <div
+            className="w-3 h-3 rounded border"
+            style={{
+              backgroundColor: data.color,
+              borderColor: data.color,
+            }}
+          />
+          <p className="text-xs text-muted-foreground">
+            Prediksi: {data.forecast} kg
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+function parseCustomDate(dateStr: string): Date {
+  const [day, month, year] = dateStr.split("-");
+  return new Date(`${year}-${month}-${day}`);
 }
