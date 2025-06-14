@@ -35,7 +35,6 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
     placeholderData: (previousData: any) => previousData,
   });
 
-  // console.log("Inventory data:", data);
   const items = Array.isArray(data) ? data : [];
 
   const filteredData = items
@@ -112,7 +111,7 @@ export function InventoryTable({ category = "all" }: InventoryTableProps) {
                     {item.batchCode}
                   </TableCell>
                   <TableCell>{item.ingredientName}</TableCell>
-                  <TableCell>{item.category}</TableCell>
+                  <TableCell>{item.category}</TableCell>  
                   <TableCell>{`${item.weight} ${item.unit}`}</TableCell>
                   <TableCell>
                     {new Date(item.entryDate).toLocaleDateString("id-ID")}
