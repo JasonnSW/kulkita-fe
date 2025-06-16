@@ -10,3 +10,8 @@ export async function getDashboardExpiryAlerts() {
   return res;
 }
 
+export async function getDashboardWasteLoss() {
+  const res = await apiClient("/api/analytics/potential-food-loss", "GET");
+  return res;
+}
+

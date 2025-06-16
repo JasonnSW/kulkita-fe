@@ -51,7 +51,7 @@ import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
 import { Calendar } from "@/components/ui/calendar";
 import { useQuery } from "@tanstack/react-query";
-import { getPredictionForecastDashboard } from "../services/forecast";
+import { getIngredientUsage, getPredictionForecastDashboard } from "../services/forecast";
 import { toast } from "sonner";
 import { usePredictionDate } from "@/features/forecast/stores/forecast";
 
@@ -62,43 +62,43 @@ const monthlyForecastData = [
   { week: "Minggu 4", sayuran: 290, buah: 190, protein: 160, total: 640 },
 ];
 
-const topIngredientsData = [
-  {
-    name: "Bayam",
-    forecast: 120,
-    previous: 100,
-    change: 20,
-    fill: "hsl(var(--chart-1))",
-  },
-  {
-    name: "Tomat",
-    forecast: 90,
-    previous: 95,
-    change: -5,
-    fill: "hsl(var(--chart-2))",
-  },
-  {
-    name: "Ayam",
-    forecast: 80,
-    previous: 70,
-    change: 10,
-    fill: "hsl(var(--chart-3))",
-  },
-  {
-    name: "Telur",
-    forecast: 70,
-    previous: 75,
-    change: -5,
-    fill: "hsl(var(--chart-4))",
-  },
-  {
-    name: "Wortel",
-    forecast: 60,
-    previous: 50,
-    change: 10,
-    fill: "hsl(var(--chart-5))",
-  },
-];
+// const topIngredientsData = [
+//   {
+//     name: "Bayam",
+//     forecast: 120,
+//     previous: 100,
+//     change: 20,
+//     fill: "hsl(var(--chart-1))",
+//   },
+//   {
+//     name: "Tomat",
+//     forecast: 90,
+//     previous: 95,
+//     change: -5,
+//     fill: "hsl(var(--chart-2))",
+//   },
+//   {
+//     name: "Ayam",
+//     forecast: 80,
+//     previous: 70,
+//     change: 10,
+//     fill: "hsl(var(--chart-3))",
+//   },
+//   {
+//     name: "Telur",
+//     forecast: 70,
+//     previous: 75,
+//     change: -5,
+//     fill: "hsl(var(--chart-4))",
+//   },
+//   {
+//     name: "Wortel",
+//     forecast: 60,
+//     previous: 50,
+//     change: 10,
+//     fill: "hsl(var(--chart-5))",
+//   },
+// ];
 
 const menuForecastData = [
   { name: "Nasi Ayam Sayur", forecast: 450, previous: 400, change: 50 },
@@ -126,6 +126,19 @@ export function ForecastSummary() {
   const [forecastPeriod, setForecastPeriod] = useState("week");
 
   const { dateRange, setDateRange } = usePredictionDate();
+
+  const durationInDays = dateRange?.from && dateRange?.to
+    ? Math.ceil(
+      (dateRange.to.getTime() - dateRange.from.getTime()) /
+      (1000 * 60 * 60 * 24)
+    )
+    : 0;
+
+  const lastToDate = dateRange?.from ?? null;
+  const lastFromDate = dateRange?.from
+    ? new Date(new Date(dateRange.from).setDate(dateRange.from.getDate() - durationInDays))
+    : null;
+
 
   // const handlePeriodChange = (value: string) => {
   //   setForecastPeriod(value);
@@ -156,6 +169,21 @@ export function ForecastSummary() {
     },
   });
 
+  const { data: currentIngredient, isLoading: isLoadingIngredient } = useQuery({
+    enabled: isValidRange,
+    queryKey: [
+      "forecast-ingredient-usage",
+      dateRange?.from || new Date(),
+      dateRange?.to || new Date(),
+    ],
+    queryFn: () => {
+      if (!lastFromDate || !lastToDate) {
+        throw new Error("Tanggal range tidak valid untuk penggunaan bahan");
+      }
+      return getIngredientUsage(lastFromDate, lastToDate);
+    },
+  })
+
   const handleDateSelect = (selectedDate: DateRange | undefined) => {
     if (selectedDate?.from && selectedDate?.to) {
       setDateRange({ from: selectedDate.from, to: selectedDate.to });
@@ -168,6 +196,15 @@ export function ForecastSummary() {
       forecast: item.Prediksi_Kebutuhan_Total_kg,
       color: barColors[index % barColors.length],
     })) || [];
+
+  const previousUsageMap = (currentIngredient as any)?.ingredientUsageKg || {};
+
+  const topIngredientsData = top5PredictedItems.map((item: any) => ({
+    name: item.name,
+    forecast: item.forecast,
+    previous: previousUsageMap[item.name] ?? 0,
+    color: item.color,
+  }));
 
   const predictionSummary = data?.prediction_summary;
   function transformForecastRaw(forecastByDate: RawForecastEntry[]) {
@@ -248,7 +285,7 @@ export function ForecastSummary() {
                   className={cn(
                     "text-xs px-3 py-1 rounded-full whitespace-nowrap",
                     categoryColorMap[category.Kategori] ||
-                      "text-gray-700 bg-gray-100"
+                    "text-gray-700 bg-gray-100"
                   )}
                 >
                   {category.Kategori}: {category.Prediksi_Kebutuhan_Total_kg} kg
@@ -286,7 +323,7 @@ export function ForecastSummary() {
                   selected={dateRange}
                   onSelect={handleDateSelect}
                   numberOfMonths={1}
-                  min={2}
+                  min={5}
                   className="rounded-lg border shadow-sm"
                 />
               </PopoverContent>
@@ -333,7 +370,7 @@ export function ForecastSummary() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="week">Mingguan</SelectItem>
-                <SelectItem value="month">Bulanan</SelectItem>
+                {/* <SelectItem value="month">Bulanan</SelectItem> */}
               </SelectContent>
             </Select>
           </div>
@@ -504,9 +541,8 @@ export function ForecastSummary() {
                   </div>
                   <div className="flex items-center">
                     <div
-                      className={`text-sm font-medium flex items-center ${
-                        menu.change > 0 ? "text-green-500" : "text-red-500"
-                      }`}
+                      className={`text-sm font-medium flex items-center ${menu.change > 0 ? "text-green-500" : "text-red-500"
+                        }`}
                     >
                       {menu.change > 0 ? (
                         <ArrowUpIcon className="h-4 w-4 mr-1" />
@@ -595,7 +631,3 @@ export const CustomTooltipContent = ({ active, payload }: any) => {
   return null;
 };
 
-function parseCustomDate(dateStr: string): Date {
-  const [day, month, year] = dateStr.split("-");
-  return new Date(`${year}-${month}-${day}`);
-}

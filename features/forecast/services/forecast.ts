@@ -1,3 +1,4 @@
+import { apiClient } from "@/lib/api-client";
 import { formatDateToString } from "@/utils/format-date";
 
 export async function getForecastData() {
@@ -23,7 +24,7 @@ export async function getPredictionForecastDashboard(
   forecastStart: Date,
   forecastEnd: Date
 ) {
-  const formattedStart = formatDateToString(forecastStart); 
+  const formattedStart = formatDateToString(forecastStart);
   const formattedEnd = formatDateToString(forecastEnd);
 
   const res = await fetch(
@@ -42,4 +43,12 @@ export async function getPredictionForecastDashboard(
 
   const data = await res.json();
   return data;
+}
+
+export async function getIngredientUsage(forecastStart: Date, forecastEnd: Date) {
+  const formattedStart = formatDateToString(forecastStart);
+  const formattedEnd = formatDateToString(forecastEnd);
+
+  const res = apiClient(`/api/analytics/ingredient-usage?startDate=${formattedStart}&endDate=${formattedEnd}`, "GET");
+  return res;
 }
