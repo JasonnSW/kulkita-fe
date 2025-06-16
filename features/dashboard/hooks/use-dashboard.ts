@@ -4,6 +4,7 @@ import { QueryClient, dehydrate } from "@tanstack/react-query";
 import {
   getDashboardSummary,
   getDashboardExpiryAlerts,
+  getDashboardWasteLoss,
 } from "@/features/dashboard/services/dashboard";
 
 export async function getDehydratedDashboardState() {
@@ -18,6 +19,10 @@ export async function getDehydratedDashboardState() {
       queryKey: ["dashboard", "expiry-alerts"],
       queryFn: getDashboardExpiryAlerts,
     }),
+    queryClient.prefetchQuery({
+      queryKey: ["dashboard", "waste-loss"],
+      queryFn: getDashboardWasteLoss,
+    })
   ]);
 
   return {
