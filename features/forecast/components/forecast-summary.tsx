@@ -155,9 +155,7 @@ export function ForecastSummary() {
 
   const { data, isLoading } = useQuery({
     enabled: isValidRange,
-    queryKey: [
-      "forecast",
-    ],
+    queryKey: ["forecast", dateRange?.from, dateRange?.to],
     queryFn: () => {
       if (!dateRange?.from || !dateRange?.to) {
         toast.error("Tanggal tidak valid");
@@ -165,19 +163,21 @@ export function ForecastSummary() {
       }
       return getPredictionForecastDashboard(dateRange.from, dateRange.to);
     },
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const { data: currentIngredient, isLoading: isLoadingIngredient } = useQuery({
     enabled: isValidRange,
-    queryKey: [
-      "forecast-ingredient-usage",
-    ],
+    queryKey: ["forecast-ingredient-usage", lastFromDate?.toISOString(), lastToDate?.toISOString()],
     queryFn: () => {
       if (!lastFromDate || !lastToDate) {
         throw new Error("Tanggal range tidak valid untuk penggunaan bahan");
       }
       return getIngredientUsage(lastFromDate, lastToDate);
     },
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   })
 
   const handleDateSelect = (selectedDate: DateRange | undefined) => {
@@ -319,7 +319,7 @@ export function ForecastSummary() {
                   selected={dateRange}
                   onSelect={handleDateSelect}
                   numberOfMonths={1}
-                  min={5}
+                  min={2}
                   className="rounded-lg border shadow-sm"
                 />
               </PopoverContent>

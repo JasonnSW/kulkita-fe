@@ -4,6 +4,12 @@ import { toast } from "sonner";
 
 export function useMenu() {
   const queryClient = useQueryClient();
+  const today = new Date();
+  const nextWeek = new Date();
+  const lastWeek = new Date();
+  nextWeek.setDate(today.getDate() + 6);
+  lastWeek.setDate(today.getDate() - 6);
+
   return useMutation({
     mutationFn: createMenu,
     onSuccess: (data: any) => {
@@ -18,8 +24,13 @@ export function useMenu() {
       queryClient.invalidateQueries({ queryKey: ["fifo", "priority-batches"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
-      queryClient.invalidateQueries({ queryKey: ["forecast"] });
-      queryClient.invalidateQueries({ queryKey: ["forecast-ingredient-usage"] });
+      queryClient.invalidateQueries({
+        queryKey: ["forecast", today.toISOString(), nextWeek.toISOString()],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["forecast-ingredient-usage", lastWeek.toISOString(), today.toISOString()],
+      });
+
       toast.success(`${data.message}`);
     },
     onError: (error) => {
@@ -30,6 +41,12 @@ export function useMenu() {
 
 export function useMenuManual() {
   const queryClient = useQueryClient();
+  const today = new Date();
+  const nextWeek = new Date();
+  const lastWeek = new Date();
+  nextWeek.setDate(today.getDate() + 6);
+  lastWeek.setDate(today.getDate() - 6);
+
   return useMutation({
     mutationFn: createMenuManual,
     onSuccess: (data: any) => {
@@ -44,8 +61,13 @@ export function useMenuManual() {
       queryClient.invalidateQueries({ queryKey: ["fifo", "priority-batches"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
-      queryClient.invalidateQueries({ queryKey: ["forecast"] });
-      queryClient.invalidateQueries({ queryKey: ["forecast-ingredient-usage"] });
+      queryClient.invalidateQueries({
+        queryKey: ["forecast", today.toISOString(), nextWeek.toISOString()],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["forecast-ingredient-usage", lastWeek.toISOString(), today.toISOString()],
+      });
+
       toast.success(`${data.message}`);
     },
     onError: (error) => {
