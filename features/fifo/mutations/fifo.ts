@@ -4,11 +4,6 @@ import { toast } from "sonner";
 
 export function useMenu() {
   const queryClient = useQueryClient();
-  const today = new Date();
-  const nextWeek = new Date();
-  const lastWeek = new Date();
-  nextWeek.setDate(today.getDate() + 6);
-  lastWeek.setDate(today.getDate() - 6);
 
   return useMutation({
     mutationFn: createMenu,
@@ -25,12 +20,13 @@ export function useMenu() {
       queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
       queryClient.invalidateQueries({
-        queryKey: ["forecast", today.toISOString(), nextWeek.toISOString()],
+        queryKey: ["forecast"],
+        exact: false
       });
       queryClient.invalidateQueries({
-        queryKey: ["forecast-ingredient-usage", lastWeek.toISOString(), today.toISOString()],
+        queryKey: ["forecast-ingredient-usage"],
+        exact: false
       });
-
       toast.success(`${data.message}`);
     },
     onError: (error) => {
@@ -41,11 +37,6 @@ export function useMenu() {
 
 export function useMenuManual() {
   const queryClient = useQueryClient();
-  const today = new Date();
-  const nextWeek = new Date();
-  const lastWeek = new Date();
-  nextWeek.setDate(today.getDate() + 6);
-  lastWeek.setDate(today.getDate() - 6);
 
   return useMutation({
     mutationFn: createMenuManual,
@@ -62,12 +53,13 @@ export function useMenuManual() {
       queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
       queryClient.invalidateQueries({
-        queryKey: ["forecast", today.toISOString(), nextWeek.toISOString()],
+        queryKey: ["forecast"],
+        type: "all"
       });
       queryClient.invalidateQueries({
-        queryKey: ["forecast-ingredient-usage", lastWeek.toISOString(), today.toISOString()],
+        queryKey: ["forecast-ingredient-usage"],
+        type: "all"
       });
-
       toast.success(`${data.message}`);
     },
     onError: (error) => {

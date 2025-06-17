@@ -2,24 +2,21 @@
 
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { getIngredientUsage, getPredictionForecastDashboard } from "../services/forecast";
+import { getForecastDateRange } from "../utils/get-date-range";
 
 export async function getDehydratedForecastState() {
   const queryClient = new QueryClient();
 
-  const today = new Date();
-  const nextWeek = new Date();
-  const lastWeek = new Date();
-  nextWeek.setDate(today.getDate() + 6);
-  lastWeek.setDate(today.getDate() - 6);
+  const { from, to, lastFrom, lastTo } = getForecastDateRange();
 
   await Promise.all([
     queryClient.prefetchQuery({
-      queryKey: ["forecast", today.toISOString(), nextWeek.toISOString()],
-      queryFn: () => getPredictionForecastDashboard(today, nextWeek),
+      queryKey: ["forecast", from.toISOString(), to.toISOString()],
+      queryFn: () => getPredictionForecastDashboard(from, to),
     }),
     queryClient.prefetchQuery({
-      queryKey: ["forecast-ingredient-usage", lastWeek.toISOString(), today.toISOString()],
-      queryFn: () => getIngredientUsage(lastWeek, today),
+      queryKey: ["forecast-ingredient-usage", lastFrom.toISOString(), lastTo.toISOString()],
+      queryFn: () => getIngredientUsage(lastFrom, lastTo),
     }),
   ]);
 
