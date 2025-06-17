@@ -2,7 +2,6 @@
 
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { getIngredientUsage, getPredictionForecastDashboard } from "../services/forecast";
-import { formatDateToString } from "@/utils/format-date";
 
 export async function getDehydratedForecastState() {
   const queryClient = new QueryClient();
@@ -15,15 +14,11 @@ export async function getDehydratedForecastState() {
 
   await Promise.all([
     queryClient.prefetchQuery({
-      queryKey: [
-        "forecast",
-      ],
+      queryKey: ["forecast", today.toISOString(), nextWeek.toISOString()],
       queryFn: () => getPredictionForecastDashboard(today, nextWeek),
     }),
     queryClient.prefetchQuery({
-      queryKey: [
-        "forecast-ingredient-usage",
-      ],
+      queryKey: ["forecast-ingredient-usage", lastWeek.toISOString(), today.toISOString()],
       queryFn: () => getIngredientUsage(lastWeek, today),
     }),
   ]);
