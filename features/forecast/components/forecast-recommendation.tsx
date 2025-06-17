@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -34,6 +34,7 @@ import { usePredictionDate } from "../stores/forecast";
 import { toast } from "sonner";
 import { getPredictionForecastDashboard } from "../services/forecast";
 import { stockRiskData, supplierRecommendationData } from "../data/forecast";
+import { getAllInventoryItems } from "@/features/inventory/services/inventory";
 
 export function ForecastRecommendation() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,6 +59,13 @@ export function ForecastRecommendation() {
     },
   });
 
+  const { data: inventory, isLoading: isLoadingInventory } = useQuery<any, any, any>({
+    queryKey: ["inventory", "items"],
+    queryFn: getAllInventoryItems,
+    placeholderData: (previousData: any) => previousData,
+  });
+
+
   // const filteredData = purchaseRecommendationData.filter(
   //   (item : any) =>
   //     (selectedCategory === "all" ||
@@ -80,16 +88,33 @@ export function ForecastRecommendation() {
   const totalPredictedDemand =
     data?.prediction_summary.total_predicted_demand || [];
 
-  const currentStock: Record<string, number> = {
-    Ayam: 100,
-    Bayam: 50,
-    Beras: 200,
-    Jeruk: 150,
-    Telur: 300,
-    Tomat: 80,
-    Wortel: 60,
-  };
+  const currentStock: Record<string, number> = useMemo(() => {
+    if (!inventory || !Array.isArray(inventory)) {
+      return {
+        Ayam: 100,
+        Bayam: 50,
+        Beras: 200,
+        Jeruk: 150,
+        Telur: 300,
+        Tomat: 80,
+        Wortel: 60,
+      };
+    }
 
+    const stockCalculation = inventory.reduce((acc: Record<string, number>, item: any) => {
+      const ingredientName = item.ingredientName;
+      const weight = parseFloat(item.weight) || 0;
+
+      if (item.active && item.freshnessStatus !== 'EXPIRED') {
+        acc[ingredientName] = (acc[ingredientName] || 0) + weight;
+      }
+
+      return acc;
+    }, {});
+
+    return stockCalculation;
+  }, [inventory]);
+  
   function getStatus(predicted: number, stock: number) {
     if (stock < predicted * 0.5) return "Kritis";
     if (stock < predicted) return "Perlu";
@@ -205,8 +230,8 @@ export function ForecastRecommendation() {
                         item.status === "Kritis"
                           ? "border-red-500 text-red-500"
                           : item.status === "Perlu"
-                          ? "border-yellow-500 text-yellow-500"
-                          : "border-green-500 text-green-500"
+                            ? "border-yellow-500 text-yellow-500"
+                            : "border-green-500 text-green-500"
                       }
                     >
                       {item.status}
@@ -396,8 +421,8 @@ export function ForecastRecommendation() {
                         item.kualitas === "Tinggi"
                           ? "border-green-500 text-green-500"
                           : item.kualitas === "Sedang"
-                          ? "border-yellow-500 text-yellow-500"
-                          : "border-red-500 text-red-500"
+                            ? "border-yellow-500 text-yellow-500"
+                            : "border-red-500 text-red-500"
                       }
                     >
                       {item.kualitas}

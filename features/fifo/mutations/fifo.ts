@@ -15,17 +15,17 @@ export function useMenu() {
       });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "items"], type: "all" });
       queryClient.invalidateQueries({ queryKey: ["fifo", "priority-batches"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
       queryClient.invalidateQueries({
         queryKey: ["forecast"],
-        exact: false
+        type: "all"
       });
       queryClient.invalidateQueries({
         queryKey: ["forecast-ingredient-usage"],
-        exact: false
+        type: "all"
       });
       toast.success(`${data.message}`);
     },
@@ -48,7 +48,7 @@ export function useMenuManual() {
       });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications", "summary"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "items"], type: "all" });
       queryClient.invalidateQueries({ queryKey: ["fifo", "priority-batches"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
