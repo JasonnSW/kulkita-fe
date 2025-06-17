@@ -17,16 +17,12 @@ export async function getDehydratedForecastState() {
     queryClient.prefetchQuery({
       queryKey: [
         "forecast",
-        formatDateToString(today),
-        formatDateToString(nextWeek),
       ],
       queryFn: () => getPredictionForecastDashboard(today, nextWeek),
     }),
     queryClient.prefetchQuery({
       queryKey: [
         "forecast-ingredient-usage",
-        formatDateToString(lastWeek),
-        formatDateToString(today),
       ],
       queryFn: () => getIngredientUsage(lastWeek, today),
     }),

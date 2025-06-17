@@ -157,8 +157,6 @@ export function ForecastSummary() {
     enabled: isValidRange,
     queryKey: [
       "forecast",
-      dateRange?.from || new Date(),
-      dateRange?.to || new Date(),
     ],
     queryFn: () => {
       if (!dateRange?.from || !dateRange?.to) {
@@ -173,8 +171,6 @@ export function ForecastSummary() {
     enabled: isValidRange,
     queryKey: [
       "forecast-ingredient-usage",
-      dateRange?.from || new Date(),
-      dateRange?.to || new Date(),
     ],
     queryFn: () => {
       if (!lastFromDate || !lastToDate) {

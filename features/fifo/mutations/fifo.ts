@@ -18,6 +18,8 @@ export function useMenu() {
       queryClient.invalidateQueries({ queryKey: ["fifo", "priority-batches"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
+      queryClient.invalidateQueries({ queryKey: ["forecast"] });
+      queryClient.invalidateQueries({ queryKey: ["forecast-ingredient-usage"] });
       toast.success(`${data.message}`);
     },
     onError: (error) => {
@@ -42,6 +44,8 @@ export function useMenuManual() {
       queryClient.invalidateQueries({ queryKey: ["fifo", "priority-batches"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "menu"] });
       queryClient.invalidateQueries({ queryKey: ["fifo", "batches"] });
+      queryClient.invalidateQueries({ queryKey: ["forecast"] });
+      queryClient.invalidateQueries({ queryKey: ["forecast-ingredient-usage"] });
       toast.success(`${data.message}`);
     },
     onError: (error) => {
