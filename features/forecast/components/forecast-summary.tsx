@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -54,6 +54,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getIngredientUsage, getPredictionForecastDashboard } from "../services/forecast";
 import { toast } from "sonner";
 import { usePredictionDate } from "@/features/forecast/stores/forecast";
+import { getForecastDateRange } from "../utils/get-date-range";
 
 const monthlyForecastData = [
   { week: "Minggu 1", sayuran: 280, buah: 180, protein: 150, total: 610 },
@@ -125,20 +126,12 @@ interface RawForecastEntry {
 export function ForecastSummary() {
   const [forecastPeriod, setForecastPeriod] = useState("week");
 
-  const { dateRange, setDateRange } = usePredictionDate();
+  const dateRange = usePredictionDate((state) => state.dateRange);
+  const setDateRange = usePredictionDate((state) => state.setDateRange);
 
-  const durationInDays = dateRange?.from && dateRange?.to
-    ? Math.ceil(
-      (dateRange.to.getTime() - dateRange.from.getTime()) /
-      (1000 * 60 * 60 * 24)
-    )
-    : 0;
-
-  const lastToDate = dateRange?.from ?? null;
-  const lastFromDate = dateRange?.from
-    ? new Date(new Date(dateRange.from).setDate(dateRange.from.getDate() - durationInDays))
-    : null;
-
+  const { from, to, lastFrom, lastTo } = useMemo(() => {
+    return getForecastDateRange(dateRange?.from, dateRange?.to);
+  }, [dateRange]);
 
   // const handlePeriodChange = (value: string) => {
   //   setForecastPeriod(value);
@@ -154,31 +147,18 @@ export function ForecastSummary() {
   const isValidRange = !!dateRange?.from && !!dateRange?.to;
 
   const { data, isLoading } = useQuery({
-    enabled: isValidRange,
-    queryKey: ["forecast", dateRange?.from, dateRange?.to],
-    queryFn: () => {
-      if (!dateRange?.from || !dateRange?.to) {
-        toast.error("Tanggal tidak valid");
-        throw new Error("Tanggal tidak valid");
-      }
-      return getPredictionForecastDashboard(dateRange.from, dateRange.to);
-    },
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
+    enabled: !!from && !!to,
+    queryKey: ["forecast", from.toISOString(), to.toISOString()],
+    queryFn: () => getPredictionForecastDashboard(from, to),
+    placeholderData: (previousData) => previousData,
   });
 
-  const { data: currentIngredient, isLoading: isLoadingIngredient } = useQuery({
-    enabled: isValidRange,
-    queryKey: ["forecast-ingredient-usage", lastFromDate?.toISOString(), lastToDate?.toISOString()],
-    queryFn: () => {
-      if (!lastFromDate || !lastToDate) {
-        throw new Error("Tanggal range tidak valid untuk penggunaan bahan");
-      }
-      return getIngredientUsage(lastFromDate, lastToDate);
-    },
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
-  })
+  const { data: currentIngredient } = useQuery({
+    enabled: !!lastFrom && !!lastTo,
+    queryKey: ["forecast-ingredient-usage", lastFrom.toISOString(), lastTo.toISOString()],
+    queryFn: () => getIngredientUsage(lastFrom, lastTo),
+    placeholderData: (previousData) => previousData,
+  });
 
   const handleDateSelect = (selectedDate: DateRange | undefined) => {
     if (selectedDate?.from && selectedDate?.to) {
