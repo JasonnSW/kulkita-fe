@@ -125,7 +125,7 @@ export function InventorySummary() {
                   />
                   <ChartTooltip content={<CustomTooltipContent />} />
                   <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                    {freshnessData.map((entry: any, index: number) => (
+                    {freshnessData?.map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={entry.fillColor} />
                     ))}
                   </Bar>

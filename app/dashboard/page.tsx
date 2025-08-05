@@ -25,7 +25,7 @@ export default async function DashboardPage() {
           <Button>Tambah Batch Baru</Button>
         </div>
       </div>
-    
+
       <HydrationBoundary state={state}>
         <SummaryCard />
         <Tabs defaultValue="inventory">
