@@ -27,7 +27,6 @@ const economicLossData = [
 export function EconomicLossReport() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      {/* was: className="col-span-2" */}
       <Card className="md:col-span-2">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Nilai Kerugian Ekonomi per Bahan</CardTitle>
@@ -72,9 +71,7 @@ export function EconomicLossReport() {
         </CardHeader>
 
         <CardContent>
-          {/* mobile: flex-col, ≥sm: flex-row */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
-            {/* blok 1 */}
             <div className="flex-1 sm:border-l sm:pl-6 first:sm:border-l-0 first:sm:pl-0 space-y-1.5">
               <div className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Total Kerugian Bulan Ini
@@ -84,7 +81,6 @@ export function EconomicLossReport() {
               </div>
             </div>
 
-            {/* blok 2 */}
             <div className="flex-1 sm:border-l sm:pl-6 first:sm:border-l-0 first:sm:pl-0 space-y-1.5">
               <div className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Estimasi Porsi Makanan yang Hilang
@@ -93,8 +89,6 @@ export function EconomicLossReport() {
                 120 porsi MBG
               </div>
             </div>
-
-            {/* blok 3 */}
             <div className="flex-1 sm:border-l sm:pl-6 first:sm:border-l-0 first:sm:pl-0 space-y-1.5">
               <div className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Perbandingan dengan Bulan Lalu

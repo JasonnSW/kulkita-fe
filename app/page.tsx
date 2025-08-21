@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Salad, TrendingUp, BellRing, Recycle } from "lucide-react";
+import logo from "@/public/logo.svg";
 
 export default function Home() {
   return (
@@ -13,14 +14,27 @@ export default function Home() {
             href="#"
             className="flex items-center gap-2 font-bold text-[#2e7d32]"
           >
-            <Image
-              src="/logo.svg"
-              alt="Kulkita"
-              width={28}
-              height={28}
-              className="rounded"
-            />
-            <span className="text-lg">Kulkita</span>
+            <div className="flex md:flex-1">
+              <nav className="flex items-center space-x-4 lg:space-x-6">
+                <div className="flex flex-col items-start justify-center">
+                  <div className="relative flex items-center">
+                    <Image
+                      src={logo}
+                      alt="Kulkita Logo"
+                      width={30}
+                      height={30}
+                      className="absolute"
+                    />
+                    <h1 className="text-3xl font-normal font-lalezar tracking-tight text-[#4CAF50] pt-3 pl-7">
+                      ulkita
+                    </h1>
+                  </div>
+                  <p className="text-xs font-sourceSansPro text-[#333]">
+                    SEGAR TERKELOLA, GIZI TERSALUR
+                  </p>
+                </div>
+              </nav>
+            </div>
           </Link>
           <nav className="hidden items-center gap-8 text-sm text-[#264c31] md:flex">
             <Link href="#fitur" className="hover:text-[#2e7d32]">
