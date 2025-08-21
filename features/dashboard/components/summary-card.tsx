@@ -62,13 +62,13 @@ export default function SummaryCard() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
-      <Card className="min-w-0">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 sm:p-5 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium truncate">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
             Total Stok Aktif
           </CardTitle>
-          <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+          <DollarSign className="h-4 w-4 text-primary flex-shrink-0" />
         </CardHeader>
 
         <CardContent className="p-4 sm:p-5 pt-0">
@@ -78,7 +78,7 @@ export default function SummaryCard() {
         </CardContent>
       </Card>
 
-      <Card className="min-w-0">
+      <Card className="">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-xs sm:text-sm font-medium truncate">
             Batch Aktif
@@ -113,8 +113,7 @@ export default function SummaryCard() {
         </CardContent>
       </Card>
 
-      {/* Potensi Food Loss */}
-      <Card className="min-w-0">
+      <Card className="">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-xs sm:text-sm font-medium truncate">
             Potensi Food Loss
@@ -129,8 +128,7 @@ export default function SummaryCard() {
         </CardContent>
       </Card>
 
-      {/* Stok Menipis */}
-      <Card className="min-w-0">
+      <Card className="">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-xs sm:text-sm font-medium truncate">
             Stok Menipis
@@ -142,7 +140,6 @@ export default function SummaryCard() {
             {data?.lowStockCount ?? "5"} Bahan
           </div>
 
-          {/* Di mobile, baris dipotong rapi; ≥sm tampil 2 baris */}
           <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 line-clamp-1 sm:line-clamp-2">
             {(
               data?.lowStockItems ?? [

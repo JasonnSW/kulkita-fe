@@ -71,30 +71,38 @@ export function EconomicLossReport() {
         </CardHeader>
 
         <CardContent>
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
-            <div className="flex-1 sm:border-l sm:pl-6 first:sm:border-l-0 first:sm:pl-0 space-y-1.5">
+          <div
+            className="
+        flex flex-col gap-4
+        sm:grid sm:grid-cols-3 sm:gap-6
+        sm:[&>div]:border-l sm:[&>div]:pl-6
+        sm:[&>div:first-child]:border-l-0 sm:[&>div:first-child]:pl-0
+      "
+          >
+            <div className="space-y-1.5">
               <div className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Total Kerugian Bulan Ini
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-primary">
-                Rp 1,250,000
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-primary">
+                Rp 1.250.000
               </div>
             </div>
 
-            <div className="flex-1 sm:border-l sm:pl-6 first:sm:border-l-0 first:sm:pl-0 space-y-1.5">
+            <div className="space-y-1.5">
               <div className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Estimasi Porsi Makanan yang Hilang
               </div>
-              <div className="text-xl sm:text-2xl font-semibold">
+              <div className="text-lg sm:text-xl md:text-2xl font-semibold">
                 120 porsi MBG
               </div>
             </div>
-            <div className="flex-1 sm:border-l sm:pl-6 first:sm:border-l-0 first:sm:pl-0 space-y-1.5">
+
+            <div className="space-y-1.5">
               <div className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Perbandingan dengan Bulan Lalu
               </div>
-              <div className="text-lg sm:text-xl font-medium text-red-500">
-                +15% (Rp 187,500)
+              <div className="text-lg sm:text-xl md:text-2xl font-medium text-red-500">
+                +15% (Rp 187.500)
               </div>
             </div>
           </div>

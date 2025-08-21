@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Salad, TrendingUp, BellRing, Recycle } from "lucide-react";
 import logo from "@/public/logo.svg";
 
 export default function Home() {
@@ -136,28 +135,24 @@ export default function Home() {
               title="Nutra Dashboard"
               desc="Memantau kondisi bahan segar secara real‑time, melihat status kesegaran (hijau‑kuning‑merah) untuk mencegah pembusukan dan mengoptimalkan stok."
               cta="Coba sekarang"
-              icon={<TrendingUp className="h-4 w-4" />}
             />
             <FeatureCard
               image="/nutra-inventory.svg"
               title="Nutra Inventory"
               desc="Mengelola input dan output bahan segar secara akurat, merekam kategori, berat, supplier, tanggal masuk, hingga lokasi penyimpanan untuk manajemen bahan segar yang rapi."
               cta="Coba sekarang"
-              icon={<Salad className="h-4 w-4" />}
             />
             <FeatureCard
               image="/nutra-prediction.svg"
               title="Nutra Prediction"
               desc="Mengetahui perkiraan masa simpan bahan segar dan pemberitahuan notifikasi stok akan memburuk. Menandai status kesegaran (hijau‑kuning‑merah) sehingga dapat bertindak cepat."
               cta="Coba sekarang"
-              icon={<BellRing className="h-4 w-4" />}
             />
             <FeatureCard
               image="/nutra-redistribusi.svg"
               title="Nutra Redistribusi"
               desc="Melatih dan menanggung permintaan untuk penawaran bahan segar berlebih/ kekurangan di unit gizi lain. Untuk menangani overstock dan understock, serta mencegah food waste di wilayah tertentu."
               cta="Coba sekarang"
-              icon={<Recycle className="h-4 w-4" />}
             />
           </div>
         </div>
@@ -235,13 +230,11 @@ function FeatureCard({
   title,
   desc,
   cta,
-  icon,
 }: {
   image: string;
   title: string;
   desc: string;
   cta: string;
-  icon: React.ReactNode;
 }) {
   return (
     <Card className="overflow-hidden border-[#e2efe6] bg-[#E4F3E5] rounded-2xl">

@@ -16,7 +16,7 @@ export default async function DashboardPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Ringkasan stok dan status bahan segar SPPG Tanah Sareal
           </p>
         </div>
@@ -29,40 +29,34 @@ export default async function DashboardPage() {
       <HydrationBoundary state={state}>
         <SummaryCard />
         <Tabs defaultValue="inventory" className="w-full">
-          <TabsList
-            className="
-      w-full overflow-x-auto no-scrollbar snap-x snap-mandatory
-      flex gap-2 p-1
-      md:grid md:grid-cols-5 md:gap-0 md:overflow-visible
-    "
-          >
+          <TabsList className="w-full overflow-x-auto no-scrollbar snap-x snap-mandatory flex gap-1 p-1 md:grid md:grid-cols-5 md:gap-0 md:overflow-visible md:justify-normal">
             <TabsTrigger
               value="inventory"
-              className="snap-start shrink-0 md:shrink"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
             >
               Status Stok
             </TabsTrigger>
             <TabsTrigger
               value="expiry"
-              className="snap-start shrink-0 md:shrink"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
             >
               Mendekati Kadaluarsa
             </TabsTrigger>
             <TabsTrigger
               value="usage"
-              className="snap-start shrink-0 md:shrink"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
             >
               Tren Penggunaan
             </TabsTrigger>
             <TabsTrigger
               value="waste"
-              className="snap-start shrink-0 md:shrink"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
             >
               Waste Loss
             </TabsTrigger>
             <TabsTrigger
               value="economic"
-              className="snap-start shrink-0 md:shrink"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
             >
               Kerugian Ekonomi
             </TabsTrigger>

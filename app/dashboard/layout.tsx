@@ -12,8 +12,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+    <div className="flex min-h-screen flex-col w-full">
+      <header
+        className="top-0 inset-x-0  z-50 border-b flex items-center gap-x-4 bg-background supports-[backdrop-filter]:bg-background/80 backdrop-blur px-4 md:px-6 min-h-14 md:min-h-[72px] py-2 md:py-3 pt-[env(safe-area-inset-top)]
+  "
+      >
         <MobileNav />
         <div className="hidden md:flex md:flex-1">
           <nav className="flex items-center space-x-4 lg:space-x-6">
