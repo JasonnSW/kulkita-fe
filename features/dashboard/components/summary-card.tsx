@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, Clipboard, DollarSign } from "lucide-react";
-import React from "react";
+import React, { useMemo } from "react";
 import { getDashboardSummary } from "../services/dashboard";
 
 type Status = "GREEN" | "YELLOW" | "RED";
@@ -21,55 +21,77 @@ const labelMap: Record<Status, string> = {
   RED: "Kritis",
 };
 
+type FreshnessEntry = { status: Status; count: number; [k: string]: any };
+
 export default function SummaryCard() {
-  const { data, isLoading } = useQuery<any, any, any>({
+  const { data, isLoading } = useQuery<any>({
     queryKey: ["dashboard", "summary"],
     queryFn: getDashboardSummary,
   });
 
-  const freshnessData = data?.freshnessStatusSummaries
-    ?.slice()
-    .sort((a: { status: Status }, b: { status: Status }) => {
-      const order: Record<Status, number> = {
-        GREEN: 0,
-        YELLOW: 1,
-        RED: 2,
-      };
-      return order[a.status] - order[b.status];
-    })
-    .map((entry: { status: Status; [key: string]: any }) => {
-      const fillColor = colorMap[entry.status];
-      return { ...entry, fillColor };
-    });
+  const freshnessData = useMemo(() => {
+    if (!data?.freshnessStatusSummaries) return [];
+    const order: Record<Status, number> = { GREEN: 0, YELLOW: 1, RED: 2 };
+    return [...data.freshnessStatusSummaries]
+      .sort(
+        (a: FreshnessEntry, b: FreshnessEntry) =>
+          order[a.status] - order[b.status]
+      )
+      .map((entry: FreshnessEntry) => ({
+        ...entry,
+        fillColor: colorMap[entry.status],
+      }));
+  }, [data]);
 
-  // console.log("SummaryCard data:", data);
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="animate-pulse">
+            <CardHeader className="pb-2">
+              <div className="h-4 w-32 bg-muted rounded" />
+            </CardHeader>
+            <CardContent>
+              <div className="h-6 w-24 bg-muted rounded" />
+              <div className="mt-3 h-4 w-40 bg-muted rounded" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
-  if (isLoading) return <div>Loading...</div>;
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+      <Card className="min-w-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 sm:p-5 pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">
             Total Stok Aktif
           </CardTitle>
-          <DollarSign className="h-4 w-4 text-primary" />
+          <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
+
+        <CardContent className="p-4 sm:p-5 pt-0">
+          <div className="text-xl sm:text-2xl font-bold">
             {data?.totalActiveBatches ?? "-"}
           </div>
-          {/* <p className="text-xs text-muted-foreground">Nilai: Rp 24,560,000</p> */}
         </CardContent>
       </Card>
-      <Card>
+
+      <Card className="min-w-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Batch Aktif</CardTitle>
-          <Clipboard className="h-4 w-4 text-primary" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">
+            Batch Aktif
+          </CardTitle>
+          <Clipboard className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{data?.totalActiveWeight}</div>
-          <div className="flex gap-2 mt-1">
-            {freshnessData?.map((entry: { status: Status; count: number }) => {
+          <div className="text-xl sm:text-2xl font-bold">
+            {data?.totalActiveWeight ?? "-"}
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
+            {freshnessData?.map((entry: FreshnessEntry) => {
               const baseColor =
                 entry.status === "GREEN"
                   ? "bg-green-50 text-green-700 border-green-200"
@@ -80,38 +102,57 @@ export default function SummaryCard() {
                 <Badge
                   key={entry.status}
                   variant="outline"
-                  className={baseColor}
+                  className={`px-1.5 py-0.5 sm:px-2 ${baseColor} text-[10px] sm:text-xs`}
                 >
-                  {entry.count} {labelMap[entry.status]}
+                  {entry.count}
+                  <span className="inline">&nbsp;{labelMap[entry.status]}</span>
                 </Badge>
               );
             })}
           </div>
         </CardContent>
       </Card>
-      <Card>
+
+      {/* Potensi Food Loss */}
+      <Card className="min-w-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">
             Potensi Food Loss
           </CardTitle>
-          <Activity className="w-4 h-4 text-primary" />
+          <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">24.5 kg</div>
-          {/* <p className="text-xs text-muted-foreground">
-            Estimasi: Rp 1,250,000
-          </p> */}
+          <div className="text-xl sm:text-2xl font-bold">
+            {data?.potentialFoodLossKg ?? "24.5"} kg
+          </div>
+          {/* <p className="text-[10px] sm:text-xs text-muted-foreground">Estimasi: Rp 1,250,000</p> */}
         </CardContent>
       </Card>
-      <Card>
+
+      {/* Stok Menipis */}
+      <Card className="min-w-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Stok Menipis</CardTitle>
-          <DollarSign className="h-4 w-4 text-primary" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">
+            Stok Menipis
+          </CardTitle>
+          <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">5 Bahan</div>
-          <p className="text-xs text-muted-foreground">
-            Bayam, Tomat, Telur, Ayam, Wortel
+          <div className="text-xl sm:text-2xl font-bold">
+            {data?.lowStockCount ?? "5"} Bahan
+          </div>
+
+          {/* Di mobile, baris dipotong rapi; ≥sm tampil 2 baris */}
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 line-clamp-1 sm:line-clamp-2">
+            {(
+              data?.lowStockItems ?? [
+                "Bayam",
+                "Tomat",
+                "Telur",
+                "Ayam",
+                "Wortel",
+              ]
+            ).join(", ")}
           </p>
         </CardContent>
       </Card>

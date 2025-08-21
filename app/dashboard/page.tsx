@@ -28,14 +28,46 @@ export default async function DashboardPage() {
 
       <HydrationBoundary state={state}>
         <SummaryCard />
-        <Tabs defaultValue="inventory">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="inventory">Status Stok</TabsTrigger>
-            <TabsTrigger value="expiry">Mendekati Kadaluarsa</TabsTrigger>
-            <TabsTrigger value="usage">Tren Penggunaan</TabsTrigger>
-            <TabsTrigger value="waste">Waste Loss</TabsTrigger>
-            <TabsTrigger value="economic">Kerugian Ekonomi</TabsTrigger>
+        <Tabs defaultValue="inventory" className="w-full">
+          <TabsList
+            className="
+      w-full overflow-x-auto no-scrollbar snap-x snap-mandatory
+      flex gap-2 p-1
+      md:grid md:grid-cols-5 md:gap-0 md:overflow-visible
+    "
+          >
+            <TabsTrigger
+              value="inventory"
+              className="snap-start shrink-0 md:shrink"
+            >
+              Status Stok
+            </TabsTrigger>
+            <TabsTrigger
+              value="expiry"
+              className="snap-start shrink-0 md:shrink"
+            >
+              Mendekati Kadaluarsa
+            </TabsTrigger>
+            <TabsTrigger
+              value="usage"
+              className="snap-start shrink-0 md:shrink"
+            >
+              Tren Penggunaan
+            </TabsTrigger>
+            <TabsTrigger
+              value="waste"
+              className="snap-start shrink-0 md:shrink"
+            >
+              Waste Loss
+            </TabsTrigger>
+            <TabsTrigger
+              value="economic"
+              className="snap-start shrink-0 md:shrink"
+            >
+              Kerugian Ekonomi
+            </TabsTrigger>
           </TabsList>
+
           <TabsContent value="inventory" className="space-y-4">
             <InventorySummary />
           </TabsContent>

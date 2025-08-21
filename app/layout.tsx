@@ -1,6 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Inter, Lalezar } from "next/font/google";
+import { Inter, Lalezar, Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import localFont from "next/font/local";
@@ -12,6 +12,12 @@ const lalezar = Lalezar({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-lalezar",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-poppins",
 });
 
 const sourceSansPro = localFont({
@@ -42,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${lalezar.variable} font-sans ${sourceSansPro.variable}`}
+        className={`${inter.variable} ${lalezar.variable} font-sans ${sourceSansPro.variable} ${poppins.variable}`}
       >
         <ReactQueryProvider>
           <ThemeProvider
@@ -53,7 +59,7 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
-          <Toaster />
+          <Toaster richColors />
         </ReactQueryProvider>
       </body>
     </html>

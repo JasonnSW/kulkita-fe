@@ -63,3 +63,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .font-poppins {
+    font-family: var(--font-poppins), sans-serif;
+  }
+}

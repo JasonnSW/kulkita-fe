@@ -26,7 +26,7 @@ export function useRegister() {
     mutationFn: register,
     onSuccess: (data: any) => {
       toast.success(data.message);
-      router.push("/");
+      router.push("/auth");
     },
     onError: () => {
       toast.error("Terjadi kesalahan saat membuat akun");
