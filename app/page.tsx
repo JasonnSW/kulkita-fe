@@ -28,7 +28,7 @@ export default function Home() {
                       ulkita
                     </h1>
                   </div>
-                  <p className="text-xs font-sourceSansPro text-[#333]">
+                  <p className="hidden sm:block text-xs font-sourceSansPro text-[#333]">
                     SEGAR TERKELOLA, GIZI TERSALUR
                   </p>
                 </div>
@@ -131,26 +131,26 @@ export default function Home() {
 
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <FeatureCard
-              image="/nutra-dashboard.svg"
-              title="Nutra Dashboard"
+              image="/kulkita-dashboard.svg"
+              title="Kulkita Dashboard"
               desc="Memantau kondisi bahan segar secara real‑time, melihat status kesegaran (hijau‑kuning‑merah) untuk mencegah pembusukan dan mengoptimalkan stok."
               cta="Coba sekarang"
             />
             <FeatureCard
-              image="/nutra-inventory.svg"
-              title="Nutra Inventory"
+              image="/kulkita-inventory.svg"
+              title="Kulkita Inventory"
               desc="Mengelola input dan output bahan segar secara akurat, merekam kategori, berat, supplier, tanggal masuk, hingga lokasi penyimpanan untuk manajemen bahan segar yang rapi."
               cta="Coba sekarang"
             />
             <FeatureCard
-              image="/nutra-prediction.svg"
-              title="Nutra Prediction"
+              image="/kulkita-prediction.svg"
+              title="Kulkita Prediction"
               desc="Mengetahui perkiraan masa simpan bahan segar dan pemberitahuan notifikasi stok akan memburuk. Menandai status kesegaran (hijau‑kuning‑merah) sehingga dapat bertindak cepat."
               cta="Coba sekarang"
             />
             <FeatureCard
-              image="/nutra-redistribusi.svg"
-              title="Nutra Redistribusi"
+              image="/kulita-redistribusi.svg"
+              title="Kulkita Redistribusi"
               desc="Melatih dan menanggung permintaan untuk penawaran bahan segar berlebih/ kekurangan di unit gizi lain. Untuk menangani overstock dan understock, serta mencegah food waste di wilayah tertentu."
               cta="Coba sekarang"
             />
@@ -165,16 +165,14 @@ export default function Home() {
               <Image
                 src="/logo.svg"
                 alt="Kulkita"
-                width={24}
-                height={24}
-                className="rounded"
+                width={28}
+                height={28}
+                className="absolute"
               />
-              <span>Kulkita</span>
+              <h1 className="text-3xl font-normal font-lalezar tracking-tight text-[#4CAF50] pt-3 pl-7">
+                ulkita
+              </h1>
             </div>
-            <p className="mt-3 max-w-xs text-sm text-[#53725f]">
-              Solusi end‑to‑end untuk inventori bahan segar dan pencegahan food
-              waste untuk program MBG.
-            </p>
           </div>
           <div className="text-sm">
             <div className="font-semibold text-[#264c31]">Produk</div>

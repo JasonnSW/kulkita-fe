@@ -96,78 +96,80 @@ export function InventorySummary() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Status Kesegaran Batch</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="max-h-dvh">
-            <ChartContainer
-              config={{
-                count: {
-                  label: "Jumlah Batch",
-                  color: "#4CAF50",
-                },
-              }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={freshnessData} layout="vertical">
-                  <XAxis type="number" />
-                  <YAxis
-                    dataKey="status"
-                    type="category"
-                    tickFormatter={(value: string) => {
-                      if (value === "RED") return "Kritis";
-                      if (value === "YELLOW") return "Waspada";
-                      if (value === "GREEN") return "Aman";
-                      return value;
-                    }}
-                  />
-                  <ChartTooltip content={<CustomTooltipContent />} />
-                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                    {freshnessData?.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={entry.fillColor} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Lokasi Penyimpanan</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {data?.storageLocationSummaries && (
-            <div className="max-h-64 overflow-y-auto space-y-4 pr-2">
-              {data.storageLocationSummaries.map(
-                (storage: any, index: number) => (
-                  <div
-                    key={`${storage.location}-${index}`}
-                    className="flex justify-between items-center"
-                  >
-                    <div className="space-y-1">
-                      <div className="text-sm font-medium">
-                        {storage.location}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {storage.batchCount} batch
-                      </div>
-                    </div>
-                    <Badge className="bg-primary">Aktif</Badge>
-                  </div>
-                )
-              )}
+      <div className="grid gap-6 md:grid-cols-2 w-full col-span-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Status Kesegaran Batch</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-dvh">
+              <ChartContainer
+                config={{
+                  count: {
+                    label: "Jumlah Batch",
+                    color: "#4CAF50",
+                  },
+                }}
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={freshnessData} layout="vertical">
+                    <XAxis type="number" />
+                    <YAxis
+                      dataKey="status"
+                      type="category"
+                      tickFormatter={(value: string) => {
+                        if (value === "RED") return "Kritis";
+                        if (value === "YELLOW") return "Waspada";
+                        if (value === "GREEN") return "Aman";
+                        return value;
+                      }}
+                    />
+                    <ChartTooltip content={<CustomTooltipContent />} />
+                    <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                      {freshnessData?.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.fillColor} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </div>
-          )}
-          <Button variant="outline" className="w-full mt-4">
-            Kelola Lokasi
-          </Button>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Lokasi Penyimpanan</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {data?.storageLocationSummaries && (
+              <div className="max-h-64 overflow-y-auto space-y-4 pr-2">
+                {data.storageLocationSummaries.map(
+                  (storage: any, index: number) => (
+                    <div
+                      key={`${storage.location}-${index}`}
+                      className="flex justify-between items-center"
+                    >
+                      <div className="space-y-1">
+                        <div className="text-sm font-medium">
+                          {storage.location}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {storage.batchCount} batch
+                        </div>
+                      </div>
+                      <Badge className="bg-primary">Aktif</Badge>
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+            <Button variant="outline" className="w-full mt-4">
+              Kelola Lokasi
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

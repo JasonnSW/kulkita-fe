@@ -28,40 +28,47 @@ export default async function DashboardPage() {
 
       <HydrationBoundary state={state}>
         <SummaryCard />
-        <Tabs defaultValue="inventory" className="w-full">
-          <TabsList className="w-full overflow-x-auto no-scrollbar snap-x snap-mandatory flex gap-1 p-1 md:grid md:grid-cols-5 md:gap-0 md:overflow-visible md:justify-normal">
+        <Tabs defaultValue="inventory">
+          <TabsList
+            className="
+      w-full
+      overflow-x-auto no-scrollbar
+      flex gap-1 p-1
+      justify-start
+      md:grid md:grid-cols-5 md:gap-0 md:overflow-visible md:justify-start
+    "
+          >
             <TabsTrigger
               value="inventory"
-              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm md:w-full md:justify-center"
             >
               Status Stok
             </TabsTrigger>
             <TabsTrigger
               value="expiry"
-              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm md:w-full md:justify-center"
             >
               Mendekati Kadaluarsa
             </TabsTrigger>
             <TabsTrigger
               value="usage"
-              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm md:w-full md:justify-center"
             >
               Tren Penggunaan
             </TabsTrigger>
             <TabsTrigger
               value="waste"
-              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm md:w-full md:justify-center"
             >
               Waste Loss
             </TabsTrigger>
             <TabsTrigger
               value="economic"
-              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm"
+              className="snap-start shrink-0 px-2 py-1 text-xs md:px-4 md:py-2 md:text-sm md:w-full md:justify-center"
             >
               Kerugian Ekonomi
             </TabsTrigger>
           </TabsList>
-
           <TabsContent value="inventory" className="space-y-4">
             <InventorySummary />
           </TabsContent>
