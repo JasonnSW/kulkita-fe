@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   BarChart3,
   Clock,
@@ -13,7 +13,7 @@ import {
   ShoppingCart,
   Users,
   TrendingUp,
-} from "lucide-react"
+} from "lucide-react";
 
 const navItems = [
   {
@@ -37,6 +37,11 @@ const navItems = [
     icon: BarChart3,
   },
   {
+    title: "Redistribusi",
+    href: "/dashboard/redistribusi",
+    icon: BarChart3,
+  },
+  {
     title: "Forecast",
     href: "/dashboard/forecast",
     icon: TrendingUp,
@@ -56,14 +61,17 @@ const navItems = [
     href: "/dashboard/settings",
     icon: Settings,
   },
-]
+];
 
 export function DashboardNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="grid items-start px-4 py-4">
-      <Link href="/dashboard" className="flex items-center gap-2 px-2 py-4 mb-6">
+      <Link
+        href="/dashboard"
+        className="flex items-center gap-2 px-2 py-4 mb-6"
+      >
         <Home className="w-6 h-6 text-primary" />
         <span className="text-lg font-bold">Kulkita</span>
       </Link>
@@ -74,7 +82,9 @@ export function DashboardNav() {
             href={item.href}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:text-primary",
-              pathname === item.href ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground",
+              pathname === item.href
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-muted-foreground"
             )}
           >
             <item.icon className="h-4 w-4" />
@@ -83,5 +93,5 @@ export function DashboardNav() {
         ))}
       </div>
     </nav>
-  )
+  );
 }
