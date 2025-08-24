@@ -149,7 +149,7 @@ export default function Home() {
               cta="Coba sekarang"
             />
             <FeatureCard
-              image="/kulita-redistribusi.svg"
+              image="/kulkita-redistribusi.svg"
               title="Kulkita Redistribusi"
               desc="Melatih dan menanggung permintaan untuk penawaran bahan segar berlebih/ kekurangan di unit gizi lain. Untuk menangani overstock dan understock, serta mencegah food waste di wilayah tertentu."
               cta="Coba sekarang"
