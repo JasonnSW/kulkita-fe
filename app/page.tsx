@@ -53,11 +53,11 @@ export default function Home() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="text-[#2e7d32]" asChild>
+            {/* <Button variant="ghost" className="text-[#2e7d32]" asChild>
               <Link href="/auth">Sign in</Link>
-            </Button>
+            </Button> */}
             <Button id="cta" className="bg-[#2e7d32] hover:bg-[#1f5e25]">
-              <Link href="/auth"> Coba Gratis</Link>
+              <Link href="/dashboard"> Coba Gratis</Link>
             </Button>
           </div>
         </div>
@@ -105,7 +105,7 @@ export default function Home() {
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Button size="lg" className="bg-[#2e7d32] hover:bg-[#1f5e25]">
-                <Link href="/auth"> Coba Gratis</Link>
+                <Link href="/dashboard"> Coba Gratis</Link>
               </Button>
             </div>
           </div>
