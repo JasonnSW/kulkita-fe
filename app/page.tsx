@@ -64,8 +64,14 @@ export default function Home() {
       </header>
 
       <div className="border-b bg-[#e4f3e5]">
-        <div className="container mx-auto flex items-stretch gap-x-4 py-2 leading-normal">
-          <Image src="/ai.svg" alt="ai" width={100} height={100} />
+        <Image
+          className="absolute left-20"
+          src="/ai.svg"
+          alt="ai"
+          width={100}
+          height={100}
+        />
+        <div className="container mx-auto flex items-stretch gap-x-4 translate-x-28 py-3 leading-normal">
           <div className="flex-1 flex flex-col justify-center text-[#1b4332] leading-normal">
             <p className="font-semibold font-poppins leading-normal">
               Ketahui Sisa Hari Kebusukan dari bahan Makanan Bergizi Gratis
