@@ -63,7 +63,7 @@ export default function Home() {
         </div>
       </header>
 
-      <div className=" bg-[#e4f3e5]">
+      {/* <div className=" bg-[#e4f3e5]">
         <Image
           className="absolute left-20"
           src="/ai.svg"
@@ -82,7 +82,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <section className="relative overflow-hidden">
         <div className="container mx-auto grid px-4 py-16 md:grid-cols-2 md:py-24 lg:gap-10">
